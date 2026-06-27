@@ -221,7 +221,7 @@ When you fill a reviewer template:
   whole suite. Before re-dispatching the reviewer, confirm the fix report
   contains the covering tests, the command run, and the output; dispatch
   the re-review once all three are present.
-- If the final whole-branch review returns findings, dispatch ONE fix
+- If the final whole-branch review returns P0/P1/P2 findings, dispatch ONE fix
   subagent with the complete findings list — not one fixer per finding.
   Per-finding fixers each rebuild context and re-run suites; a real
   session's final-review fix wave cost more than all its tasks combined.
