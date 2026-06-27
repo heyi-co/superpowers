@@ -331,8 +331,8 @@ Task reviewer: Spec ✅. Task quality: Approved.
 ...
 
 [After all tasks]
-[Dispatch final code-reviewer]
-Final reviewer: All requirements met, ready to merge
+[Use `code-review` for final whole-branch review]
+Final code-review: All requirements met, ready to merge
 
 Done!
 ```

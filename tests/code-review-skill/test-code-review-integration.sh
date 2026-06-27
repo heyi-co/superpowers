@@ -50,6 +50,25 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local path="$1"
+  local needle="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing path: $path"
+    return
+  fi
+
+  if grep -Fq -- "$needle" "$path"; then
+    fail "$description"
+    echo "    expected not to find: $needle"
+  else
+    pass "$description"
+  fi
+}
+
 assert_sha256() {
   local path="$1"
   local expected="$2"
@@ -99,6 +118,7 @@ assert_contains "$REQUESTING" "ordinary review" "requesting-code-review keeps or
 assert_contains "$REQUESTING" "strong review" "requesting-code-review documents strong review trigger"
 assert_contains "$SDD" "Final whole-branch review: use \`code-review\`" "SDD final review uses code-review"
 assert_contains "$SDD" "Per-task reviews remain task-scoped" "SDD preserves lightweight per-task review"
+assert_not_contains "$SDD" "[Dispatch final code-reviewer]" "SDD example does not use stale final code-reviewer path"
 
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "STATUS: FAILED ($FAILURES failure(s))"
