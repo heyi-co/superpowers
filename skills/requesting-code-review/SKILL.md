@@ -29,6 +29,10 @@ Use `code-review` for max review when the user asks for a "max review", "deep re
 
 If max review applies, invoke `code-review` instead of filling [code-reviewer.md](code-reviewer.md).
 
+When `code-review` returns JSON findings, triage them by priority before finishing work. P0, P1, and P2 findings are blocking. P3 findings are non-blocking by default. Only your human partner can explicitly accept blocking findings and choose to proceed anyway.
+
+After fixing max-review findings, rerun `code-review` on the updated diff. Do not assume a fix wave cleared the review gate until the fresh rerun confirms it.
+
 ## How to Request Ordinary Review
 
 Use this path only when max review does not apply.
@@ -87,7 +91,9 @@ You: [Fix progress indicators]
 **Subagent-Driven Development:**
 - Per-task review uses the task-scoped SDD reviewer.
 - Final whole-branch review should use `code-review` for max review.
-- Fix blocking findings before finishing the branch.
+- P0, P1, and P2 findings are blocking before finishing the branch unless the human explicitly accepts them.
+- P3 findings are non-blocking by default and should be tracked or fixed based on judgment.
+- After any final-review fix wave, rerun `code-review` on the updated branch diff.
 
 **Executing Plans:**
 - Use ordinary review after each task or at natural checkpoints.

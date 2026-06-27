@@ -5,7 +5,7 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad max-grade `code-review` whole-branch review at the end.
+Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad max-grade whole-branch review at the end. Dispatch a fresh final reviewer subagent with `code-review` for that last gate; do not replace reviewer isolation with an in-session self-review.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
@@ -62,7 +62,8 @@ digraph process {
 
     "Read plan, note context and global constraints, create todos" [shape=box];
     "More tasks remain?" [shape=diamond];
-    "Final whole-branch review: use `code-review`" [shape=box];
+    "Dispatch a fresh final reviewer subagent with `code-review`" [shape=box];
+    "P0, P1, and P2 findings block finishing" [shape=diamond];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context and global constraints, create todos" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -77,8 +78,11 @@ digraph process {
     "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
     "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Final whole-branch review: use `code-review`" [label="no"];
-    "Final whole-branch review: use `code-review`" -> "Use superpowers:finishing-a-development-branch";
+    "More tasks remain?" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="no"];
+    "Dispatch a fresh final reviewer subagent with `code-review`" -> "P0, P1, and P2 findings block finishing";
+    "P0, P1, and P2 findings block finishing" -> "Dispatch fix subagent for Critical/Important findings" [label="yes"];
+    "Dispatch fix subagent for Critical/Important findings" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="rerun final review"];
+    "P0, P1, and P2 findings block finishing" -> "Use superpowers:finishing-a-development-branch" [label="no"];
 }
 ```
 
@@ -210,6 +214,7 @@ When you fill a reviewer template:
   branch started from, e.g. `git merge-base main HEAD`) and include the
   printed path in the final review dispatch, so the final reviewer reads
   one file instead of re-deriving the branch diff with git commands.
+- The final whole-branch review handoff must include the plan file, progress ledger, final review package, and unresolved prior Minor/P3 findings. A bare diff review can miss missing requirements that only exist in the plan or were deferred earlier in the branch.
 - Every fix dispatch carries the implementer contract: the fix subagent
   re-runs the tests covering its change and reports the results. Name the
   covering test files in the dispatch — a one-line fix does not need the
@@ -220,6 +225,7 @@ When you fill a reviewer template:
   subagent with the complete findings list — not one fixer per finding.
   Per-finding fixers each rebuild context and re-run suites; a real
   session's final-review fix wave cost more than all its tasks combined.
+- P0, P1, and P2 findings block finishing unless your human partner explicitly accepts them. P3 findings are non-blocking by default. After any final-review fix wave, dispatch a fresh final reviewer subagent with `code-review` again on the updated branch diff before finishing.
 
 ## File Handoffs
 
@@ -331,7 +337,7 @@ Task reviewer: Spec ✅. Task quality: Approved.
 ...
 
 [After all tasks]
-[Use `code-review` for final whole-branch review]
+[Dispatch a fresh final reviewer subagent with `code-review` using the plan file, progress ledger, final review package, and unresolved prior Minor/P3 findings]
 Final code-review output: `[]`
 
 Done!
