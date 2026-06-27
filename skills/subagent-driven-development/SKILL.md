@@ -56,7 +56,7 @@ digraph process {
         "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
         "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [shape=box];
         "Task reviewer reports spec ✅ and quality approved?" [shape=diamond];
-        "Dispatch fix subagent for Critical/Important findings" [shape=box];
+        "Dispatch fix subagent for blocking findings" [shape=box];
         "Mark task complete in todo list and progress ledger" [shape=box];
     }
 
@@ -73,15 +73,15 @@ digraph process {
     "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
     "Implementer subagent implements, tests, commits, self-reviews" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)";
     "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" -> "Task reviewer reports spec ✅ and quality approved?";
-    "Task reviewer reports spec ✅ and quality approved?" -> "Dispatch fix subagent for Critical/Important findings" [label="no"];
-    "Dispatch fix subagent for Critical/Important findings" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [label="re-review"];
+    "Task reviewer reports spec ✅ and quality approved?" -> "Dispatch fix subagent for blocking findings" [label="no"];
+    "Dispatch fix subagent for blocking findings" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [label="re-review"];
     "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
     "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="no"];
     "Dispatch a fresh final reviewer subagent with `code-review`" -> "P0, P1, and P2 findings block finishing";
-    "P0, P1, and P2 findings block finishing" -> "Dispatch fix subagent for Critical/Important findings" [label="yes"];
-    "Dispatch fix subagent for Critical/Important findings" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="rerun final review"];
+    "P0, P1, and P2 findings block finishing" -> "Dispatch fix subagent for blocking findings" [label="yes"];
+    "Dispatch fix subagent for blocking findings" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="rerun final review"];
     "P0, P1, and P2 findings block finishing" -> "Use superpowers:finishing-a-development-branch" [label="no"];
 }
 ```
