@@ -119,6 +119,8 @@ assert_contains "$REQUESTING" "strong review" "requesting-code-review documents 
 assert_contains "$SDD" "Final whole-branch review: use \`code-review\`" "SDD final review uses code-review"
 assert_contains "$SDD" "Per-task reviews remain task-scoped" "SDD preserves lightweight per-task review"
 assert_not_contains "$SDD" "[Dispatch final code-reviewer]" "SDD example does not use stale final code-reviewer path"
+assert_contains "$SDD" "Final code-review output: \`[]\`" "SDD example shows JSON-first empty findings output"
+assert_not_contains "$SDD" "All requirements met, ready to merge" "SDD example does not use old prose final review output"
 
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "STATUS: FAILED ($FAILURES failure(s))"

@@ -332,7 +332,7 @@ Task reviewer: Spec ✅. Task quality: Approved.
 
 [After all tasks]
 [Use `code-review` for final whole-branch review]
-Final code-review: All requirements met, ready to merge
+Final code-review output: `[]`
 
 Done!
 ```
