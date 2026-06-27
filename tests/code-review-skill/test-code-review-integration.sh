@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SKILL="$REPO_ROOT/skills/code-review/SKILL.md"
+REQUESTING="$REPO_ROOT/skills/requesting-code-review/SKILL.md"
+SDD="$REPO_ROOT/skills/subagent-driven-development/SKILL.md"
 EXPECTED_SKILL_SHA256="a71428ab647d57015da21a373be371f65fc5a17ded76fd7a2397f5652869b5ae"
 
 FAILURES=0
@@ -92,6 +94,11 @@ assert_contains "$SKILL" "P2" "skill defines P2 priority"
 assert_contains "$SKILL" "P3" "skill defines P3 priority"
 assert_contains "$SKILL" "Return findings as a JSON array of at most 15 objects" "skill requires capped JSON output"
 assert_contains "$SKILL" "return \`[]\`" "skill returns empty JSON array when no findings survive"
+assert_contains "$REQUESTING" "Use \`code-review\` for max review" "requesting-code-review routes max review to code-review"
+assert_contains "$REQUESTING" "ordinary review" "requesting-code-review keeps ordinary review path"
+assert_contains "$REQUESTING" "strong review" "requesting-code-review documents strong review trigger"
+assert_contains "$SDD" "Final whole-branch review: use \`code-review\`" "SDD final review uses code-review"
+assert_contains "$SDD" "Per-task reviews remain task-scoped" "SDD preserves lightweight per-task review"
 
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "STATUS: FAILED ($FAILURES failure(s))"

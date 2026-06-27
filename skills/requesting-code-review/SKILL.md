@@ -21,7 +21,17 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 - Before refactoring (baseline check)
 - After fixing complex bug
 
-## How to Request
+## Review Modes
+
+Use ordinary review for small diffs, development checkpoints, and routine feature reviews. Ordinary review dispatches a `general-purpose` subagent with [code-reviewer.md](code-reviewer.md) and returns human-readable strengths, issues, recommendations, and a merge assessment.
+
+Use `code-review` for max review when the user asks for a "max review", "deep review", "strong review", "comprehensive review", PR review, branch review, bug hunt, security review, contract-break review, regression search, or merge-gate review. The `code-review` skill runs the JSON-first max-review protocol and is the preferred final review for high-risk or pre-merge changes.
+
+If max review applies, invoke `code-review` instead of filling [code-reviewer.md](code-reviewer.md).
+
+## How to Request Ordinary Review
+
+Use this path only when max review does not apply.
 
 **1. Get git SHAs:**
 ```bash
@@ -75,17 +85,17 @@ You: [Fix progress indicators]
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- Per-task review uses the task-scoped SDD reviewer.
+- Final whole-branch review should use `code-review` for max review.
+- Fix blocking findings before finishing the branch.
 
 **Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
+- Use ordinary review after each task or at natural checkpoints.
+- Use `code-review` before merge or when the user asks for strong review.
 
 **Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
+- Use ordinary review for small local checkpoints.
+- Use `code-review` before merge, for PR review, or when stuck on subtle bugs.
 
 ## Red Flags
 
@@ -94,6 +104,7 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
+- Use ordinary review when the user explicitly asked for max, deep, strong, comprehensive, PR, or bug-finding review
 
 **If reviewer wrong:**
 - Push back with technical reasoning
