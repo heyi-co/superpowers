@@ -387,7 +387,8 @@ Done!
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found spec issues = not done)
-- Skip review loops (reviewer found issues = implementer fixes = review again)
+- Skip per-task review loops (blocking task findings = implementer/fix
+  subagent fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - Tell a reviewer what not to flag, or pre-rate a finding's severity in the
   dispatch prompt ("treat it as Minor at most") — the plan's example code is
@@ -404,11 +405,17 @@ Done!
 - Provide additional context if needed
 - Don't rush them into implementation
 
-**If reviewer finds issues:**
-- Implementer (same subagent) fixes them
+**If a per-task reviewer finds blocking issues:**
+- Implementer/fix subagent fixes Critical/Important task findings
 - Reviewer reviews again
-- Repeat until approved
+- Repeat until spec compliance and task quality are approved
 - Don't skip the re-review
+
+**If final `code-review` returns findings:**
+- P0/P1/P2 findings block finishing unless your human partner explicitly accepts them
+- Dispatch one final-review fix subagent with the complete blocking findings list
+- Rerun `code-review` after the fix wave
+- P3 findings are non-blocking by default; record them or fix them only when judgment or user direction says they are worth the churn
 
 **If subagent fails task:**
 - Dispatch fix subagent with specific instructions
