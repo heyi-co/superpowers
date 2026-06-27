@@ -124,6 +124,8 @@ assert_contains "$SDD" "Dispatch a fresh final reviewer subagent with \`code-rev
 assert_contains "$SDD" "plan file, progress ledger, final review package" "SDD passes plan, ledger, and review package to final review"
 assert_contains "$SDD" "P0, P1, and P2 findings block finishing" "SDD blocks finishing on P0/P1/P2 findings"
 assert_contains "$SDD" "P3 findings are non-blocking by default" "SDD keeps P3 findings non-blocking by default"
+assert_contains "$SDD" "Proceed with unfixed blocking issues" "SDD red flags only proceeding with unresolved blocking findings"
+assert_not_contains "$SDD" "Proceed with unfixed issues" "SDD red flags avoid treating all unresolved issues as blocking"
 assert_contains "$SDD" "Dispatch task fix subagent for blocking findings" "SDD graph uses a distinct per-task fix node"
 assert_contains "$SDD" "Dispatch final-review fix subagent for P0/P1/P2 findings" "SDD graph uses a distinct final-review fix node"
 assert_not_contains "$SDD" "Dispatch fix subagent for blocking findings" "SDD graph avoids the ambiguous shared fix node label"
