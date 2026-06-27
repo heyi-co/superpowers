@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SKILL="$REPO_ROOT/skills/code-review/SKILL.md"
+EXPECTED_SKILL_SHA256="a71428ab647d57015da21a373be371f65fc5a17ded76fd7a2397f5652869b5ae"
 
 FAILURES=0
 
@@ -47,9 +48,33 @@ assert_contains() {
   fi
 }
 
+assert_sha256() {
+  local path="$1"
+  local expected="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing path: $path"
+    return
+  fi
+
+  local actual
+  actual="$(shasum -a 256 "$path" | awk '{print $1}')"
+
+  if [[ "$actual" == "$expected" ]]; then
+    pass "$description"
+  else
+    fail "$description"
+    echo "    expected sha256: $expected"
+    echo "    actual sha256:   $actual"
+  fi
+}
+
 echo "Code review skill integration tests"
 
 assert_file_exists "$SKILL" "code-review skill exists"
+assert_sha256 "$SKILL" "$EXPECTED_SKILL_SHA256" "code-review skill matches pinned source digest"
 assert_contains "$SKILL" "name: code-review" "skill frontmatter names code-review"
 assert_contains "$SKILL" "Review code changes with a max-grade, recall-oriented pipeline" "description exposes max-grade review trigger"
 assert_contains "$SKILL" "Phase 0" "skill defines Phase 0"
