@@ -1,7 +1,9 @@
 # Issue-to-Workflow Skills Draft
 
-Status: implementation draft. `triaging-issues` shipped first; this follow-up
-adds `working-from-issues` as the consumer of the `Triage Result` contract.
+Status: implementation draft. `triaging-issues` shipped first,
+`working-from-issues` consumes the `Triage Result` contract, and
+`decomposing-issues` owns coverage-preserving child issue drafts when triage
+or a failed resolution loop shows the issue is too broad.
 
 ## Goal
 
@@ -17,7 +19,7 @@ is a generic workflow for any repository where Superpowers is installed.
 
 Do not build one giant "handle issue" skill.
 
-The target shape uses two skills with a stable handoff:
+The target shape uses three skills with stable handoffs:
 
 1. `triaging-issues`
    - Intake, clarify, classify, deduplicate, and route an issue.
@@ -28,10 +30,19 @@ The target shape uses two skills with a stable handoff:
    - Consumes a `Triage Result`.
    - Routes into existing Superpowers skills only when the issue is ready.
    - Stops when the issue needs information, is duplicate, out of scope,
-     security-sensitive, or too large.
+     security-sensitive, too large, or blocked by a failed resolution loop.
 
-The handoff is the contract. The second skill should not repeat triage. The
-first skill should not start implementation.
+3. `decomposing-issues`
+   - Consumes `needs-decomposition`, `blocked-by-resolution-loop`, an explicit
+     human split decision, or a failed-loop summary.
+   - Produces coverage-preserving child issue drafts with `Scope Atoms` and a
+     `Coverage Matrix`.
+   - Does not replace triage, implementation, or GitHub mutation approval.
+
+The handoff is the contract. `triaging-issues` should not start
+implementation or draft full child issue bodies. `working-from-issues` should
+not repeat triage or inline a split template. `decomposing-issues` is the only
+skill that owns coverage-preserving child issue drafts.
 
 The first implementation shipped only `triaging-issues`. It solved the first
 real gap: agents starting work from raw, ambiguous, duplicate, unsupported, or
@@ -57,6 +68,18 @@ Issue input
   -> existing workflow skill
 ```
 
+Decomposition flow:
+
+```text
+Issue input
+  -> triaging-issues
+  -> Triage Result
+  -> decomposing-issues when needed
+  -> Issue Decomposition with coverage-preserving child issue drafts
+  -> selected child gets fresh triage or an explicit human decision
+  -> working-from-issues
+```
+
 ## Why This Belongs in Superpowers
 
 Superpowers currently starts from user intent, debugging symptoms, or an
@@ -80,7 +103,7 @@ The generic value is the process:
 - search duplicates and related PRs
 - distinguish classification from actionability
 - route to existing skills only when ready
-- stop and split when scope is too large
+- stop and route to decomposition when scope is too large
 
 Repository-specific value stays in target repository files, not in the core
 skill.
@@ -279,23 +302,21 @@ Signals:
 - the issue mixes bug fix, feature design, migration, docs, and cleanup
 - a proposed fix would touch broad architecture without a bounded objective
 
-Do not split just because the codebase is large. Split when each child issue can
-be independently understood, implemented, reviewed, and verified.
+Do not split just because the codebase is large. Select `needs-decomposition`
+when each future child issue would need to be independently understood,
+implemented, reviewed, and verified.
 
-When `needs-decomposition` is selected, output a split proposal instead of
-starting work:
+When `needs-decomposition` is selected, do not start work and do not draft full
+child issue bodies during triage. Output a decomposition handoff:
 
 - parent issue summary
-- proposed child issues
-- dependency order
-- acceptance criteria per child
-- shared constraints
-- explicit out-of-scope items
-- suggested first child issue
+- why decomposition is needed
+- known constraints, dependencies, or decisions already visible from evidence
+- recommended next skill: `superpowers:decomposing-issues`
 
-Do not create child GitHub issues by default. Draft them for human approval.
-For coverage-preserving child issue drafts, route to
-`superpowers:decomposing-issues`.
+Do not create child GitHub issues by default. `decomposing-issues` owns the
+coverage matrix, dependency order, child issue drafts, parent disposition, and
+mutation preview.
 
 ### Triage Result Output
 
@@ -330,11 +351,11 @@ Recommended Next Superpowers Skill:
 Draft Reply:
 > ...
 
-Split Proposal:
+Decomposition Handoff:
 - Parent summary:
-- Child issue drafts:
-- Dependency order:
-- Suggested first child:
+- Why decomposition is needed:
+- Known constraints:
+- Recommended next skill:
 ```
 
 If a section does not apply, write `None`.
@@ -348,6 +369,7 @@ If a section does not apply, write `None`.
 - Publicly triaging possible security issues
 - Returning both duplicate and needs-info without explaining priority
 - Collapsing multiple independent issues into one implementation plan
+- Drafting full child issue bodies during triage
 - Mutating GitHub without explicit approval
 
 ## Skill 2: working-from-issues
@@ -420,7 +442,7 @@ Use the `Actionability` field:
 - `needs-decomposition`
   - Do not implement.
   - Route to `superpowers:decomposing-issues` for coverage-preserving child
-    issue drafts and ask which child to tackle first.
+    issue drafts. Do not draft children in `working-from-issues`.
 
 - `blocked-by-resolution-loop`
   - Stop the current fix loop.
@@ -449,36 +471,16 @@ either `needs-decomposition`, `needs-maintainer-decision`, or
 The agent may continue into a third fix/re-review cycle only if the human
 explicitly chooses that path after seeing the reassessment.
 
-### Split Proposal Format
+### Decomposition Handoff
 
-When resolution needs to split the issue, produce child issue drafts:
+When resolution needs to split the issue, do not draft child issues in
+`working-from-issues`. Return to or invoke `triaging-issues` for a fresh
+`Triage Result` when the loop changed the evidence, then route
+`needs-decomposition` or `blocked-by-resolution-loop` to
+`superpowers:decomposing-issues`.
 
-```markdown
-## Proposed Split
-
-Parent Issue:
-- Keep as umbrella / close after children / replace with child issues:
-
-Child 1:
-- Title:
-- Problem:
-- Acceptance criteria:
-- Verification:
-- Dependencies:
-- Out of scope:
-
-Child 2:
-- Title:
-- Problem:
-- Acceptance criteria:
-- Verification:
-- Dependencies:
-- Out of scope:
-
-Suggested first child:
-
-Why this split:
-```
+`decomposing-issues` owns the `Scope Atoms`, `Coverage Matrix`, child issue
+drafts, dependency order, parent disposition, and mutation preview.
 
 ### Red Flags
 
@@ -488,6 +490,7 @@ Why this split:
 - Turning a vague feature request into a plan without brainstorming
 - Continuing review loops after scope is clearly expanding
 - Creating child issues without approval
+- Drafting child issue bodies in `working-from-issues`
 - Claiming an issue is fixed when only one child concern was fixed
 
 ## What To Leave Out by Default
@@ -554,7 +557,8 @@ and Claude Code:
 9. Actionable bug with enough reproduction evidence -> outputs
    `ready-for-debugging` and recommends `superpowers:systematic-debugging`.
 10. Broad issue bundling independent bugs, feature work, docs, and cleanup ->
-   outputs `needs-decomposition` with child drafts and no implementation route.
+   outputs `needs-decomposition` with a decomposition handoff and no
+   implementation route.
 11. Re-triage after repeated failed fix/review loops -> outputs
    `blocked-by-resolution-loop`, summarizes attempts, and recommends
    decomposition or maintainer decision before another fix cycle.
@@ -583,7 +587,14 @@ Phase 2:
   pressure scenarios.
 - Add structural tests that each actionability state routes to the correct
   existing skill or stops.
-- Add the resolution loop guard and split proposal format.
+- Add the resolution loop guard and route decomposition states to
+  `decomposing-issues`.
+
+Phase 2.5:
+
+- Add `decomposing-issues` for coverage-preserving child issue drafts.
+- Add structural tests for `Scope Atoms`, `Coverage Matrix`, mutation gating,
+  and negative assertions that router skills do not keep legacy split templates.
 
 Phase 3:
 

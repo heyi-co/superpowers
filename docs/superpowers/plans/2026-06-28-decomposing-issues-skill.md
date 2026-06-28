@@ -97,7 +97,8 @@ Create scenarios for:
 
 - [ ] **Step 3: Add evaluation notes**
 
-Record baseline expected failures before the skill and note that full behavior smoke testing must cover Codex App and Claude Code before PR.
+Record baseline expected failures before the skill and note that full behavior
+smoke testing must cover Codex CLI or Codex App, plus Claude Code, before PR.
 
 - [ ] **Step 4: Run test to verify GREEN for new files**
 

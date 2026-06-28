@@ -1,7 +1,7 @@
 # Decomposing Issues Pressure Scenarios
 
 Run these when creating or changing `decomposing-issues`. Test at least Codex
-App and Claude Code before opening a PR.
+CLI or Codex App, plus Claude Code, before opening a PR.
 
 ## Baseline Failure Evidence
 
@@ -94,6 +94,8 @@ Actionability: needs-decomposition
 Expected:
 
 - rejects pure component split pressure
+- does not use component ownership or component-owned slices as the primary
+  split dimension
 - uses vertical slices or Hamburger slicing
 - warns if any technical task is only useful inside a child story
 
@@ -137,6 +139,8 @@ Expected:
 - does not force decomposition
 - returns to maintainer decision framing
 - names the decision needed before child issues can be drafted
+- emits `## Decomposition Blocked`, not `## Issue Decomposition`
+- does not turn each product/model/IA decision into a child issue draft
 
 ### 6. Security-sensitive parent
 

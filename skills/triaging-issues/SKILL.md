@@ -172,14 +172,14 @@ Signals:
 - bug fix, feature design, migration, docs, and cleanup are mixed together
 - proposed fix touches broad architecture without a bounded objective
 
-Do not split just because the codebase is large. Split when each child can be
-understood, implemented, reviewed, and verified independently.
+Do not split just because the codebase is large. Select `needs-decomposition`
+when each future child would need to be understood, implemented, reviewed, and
+verified independently.
 
-When splitting, draft child issue drafts for human approval. Do not create them.
-Each child draft should include title, problem, acceptance criteria,
-verification, dependencies, and out-of-scope items.
-For coverage-preserving child issue drafts, recommend
-`superpowers:decomposing-issues`.
+During triage, explain why decomposition is needed and recommend
+`superpowers:decomposing-issues`. Do not perform coverage-preserving
+decomposition, draft full child issue bodies, or replace the decomposition
+skill's `Scope Atoms` and `Coverage Matrix` with an inline split template.
 
 ## Triage Result
 
@@ -214,11 +214,11 @@ Recommended Next Superpowers Skill:
 Draft Reply:
 > ...
 
-Split Proposal:
+Decomposition Handoff:
 - Parent summary:
-- Child issue drafts:
-- Dependency order:
-- Suggested first child:
+- Why decomposition is needed:
+- Known constraints:
+- Recommended next skill:
 ```
 
 Write `None` for sections that do not apply. Keep recommendations concrete and
@@ -236,6 +236,7 @@ Stop and correct course if you are:
 - Publicly triaging possible security issues
 - Returning both duplicate and needs-info without explaining priority
 - Collapsing multiple independent issues into one implementation plan
+- Drafting full child issue bodies during triage
 - Mutating GitHub without explicit approval
 - Turning a support question into a code task
 

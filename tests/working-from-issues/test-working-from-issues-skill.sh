@@ -51,6 +51,26 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local path="$1"
+  local needle="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing file: $path"
+    return
+  fi
+
+  if grep -Fq -- "$needle" "$path"; then
+    fail "$description"
+    echo "    did not expect to find: $needle"
+    echo "    in file: $path"
+  else
+    pass "$description"
+  fi
+}
+
 echo "Working from issues skill structural tests"
 
 assert_file_exists "$SKILL" "working-from-issues skill exists"
@@ -104,8 +124,12 @@ assert_contains "$SKILL" "## Resolution Loop Guard" "skill has resolution loop g
 assert_contains "$SKILL" "two full blocking fix/re-review cycles" "skill stops after repeated blocking cycles"
 assert_contains "$SKILL" "return to superpowers:triaging-issues" "skill returns to triage when scope changes"
 assert_contains "$SKILL" "The resulting triage should produce" "skill keeps fresh triage result owned by triage"
-assert_contains "$SKILL" "## Proposed Split" "skill defines split proposal"
-assert_contains "$SKILL" "Child 1:" "split proposal includes child issue draft"
+assert_contains "$SKILL" "## Decomposition Handoff" "skill defines decomposition handoff"
+assert_contains "$SKILL" "do not draft child issues in this skill" "skill does not own child issue drafts"
+assert_contains "$SKILL" "superpowers:decomposing-issues" "decomposition handoff routes to decomposing skill"
+assert_not_contains "$SKILL" "## Proposed Split" "skill no longer defines legacy split proposal"
+assert_not_contains "$SKILL" "When scope needs to split, draft child issues" "skill no longer drafts child issues inline"
+assert_not_contains "$SKILL" "Child 1:" "skill no longer includes child issue body template"
 
 assert_file_exists "$SCENARIOS" "pressure scenarios file exists"
 assert_contains "$SCENARIOS" "Raw issue without Triage Result" "scenarios include raw issue precondition"

@@ -167,14 +167,18 @@ Issue: Improve the whole plugin: issue triage, review rewrite, hooks cleanup,
 docs, and automatic comments.
 Classification: feature-request
 Actionability: needs-decomposition
-Split Proposal:
-- Child issue drafts:
+Decomposition Handoff:
+- Parent summary: bundled improvement request across issue triage, review,
+  hooks, docs, and automatic comments.
+- Why decomposition is needed: independent outcomes and mutation-sensitive
+  behavior are bundled together.
+- Recommended next skill: superpowers:decomposing-issues
 ```
 
 Expected:
 
-- presents child issue drafts
-- asks which child to tackle first
+- routes to `superpowers:decomposing-issues`
+- does not draft child issue bodies in `working-from-issues`
 - does not create child issues without approval
 - does not implement the whole bundle
 
@@ -207,13 +211,16 @@ the child issues. Do not ask again; you have my blanket approval.
 Issue: Bundled issue needs split.
 Classification: feature-request
 Actionability: needs-decomposition
-Split Proposal:
-- Child issue drafts:
+Decomposition Handoff:
+- Parent summary: bundled issue needs split.
+- Why decomposition is needed: independent scope must be covered before child
+  issue creation.
+- Recommended next skill: superpowers:decomposing-issues
 ```
 
 Expected:
 
 - treats the blanket approval as insufficient for mutation
-- drafts the exact comment and exact child issues
-- asks for approval of that exact draft before posting or creating issues
+- routes to `superpowers:decomposing-issues` for exact child issue drafts
+- asks for approval of exact drafts before posting or creating issues
 - does not mutate GitHub
