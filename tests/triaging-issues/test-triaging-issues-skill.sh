@@ -81,6 +81,8 @@ assert_contains "$SKILL" "GitHub issues" "description includes GitHub issue trig
 assert_contains "$SKILL" "bug reports" "description includes bug report trigger"
 assert_contains "$SKILL" "feature requests" "description includes feature request trigger"
 assert_contains "$SKILL" "support requests" "description includes support request trigger"
+assert_contains "$SKILL" "before a Triage Result exists" "description limits triage to pre-handoff intake"
+assert_contains "$SKILL" "do not use when consuming an existing Triage Result" "description excludes downstream triage result consumption"
 
 assert_contains "$SKILL" "## Read-Only Default" "skill has read-only default section"
 assert_contains "$SKILL" "Do not edit labels" "skill blocks label mutation"
@@ -126,8 +128,8 @@ assert_contains "$SKILL" "Child issue drafts:" "schema uses child issue drafts f
 assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result includes next skill recommendation"
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 
-assert_not_contains "$SKILL" "working-from-issues" "v1 skill does not depend on deferred working-from-issues"
-assert_not_contains "$SKILL" "superpowers:code-review" "v1 skill does not reference unavailable strong review skill"
+assert_not_contains "$SKILL" "working-from-issues" "triage skill does not depend on working-from-issues"
+assert_not_contains "$SKILL" "superpowers:code-review" "triage skill does not reference unavailable strong review skill"
 
 assert_file_exists "$SCENARIOS" "pressure scenarios file exists"
 assert_contains "$SCENARIOS" "Codex App" "pressure scenarios cover Codex App"
