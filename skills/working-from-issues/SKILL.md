@@ -103,10 +103,11 @@ Do not write code for these actionability states:
   when present.
 - `needs-maintainer-decision` - present the exact decision needed and the
   tradeoff; do not implement.
-- `needs-decomposition` - present child issue drafts and ask which child to
-  tackle first; do not create child issues.
+- `needs-decomposition` - route to `superpowers:decomposing-issues` for
+  coverage-preserving child issue drafts; do not create child issues.
 - `blocked-by-resolution-loop` - stop the current fix loop, summarize attempts
-  and remaining findings, then propose split or escalation.
+  and remaining findings, then route to `superpowers:decomposing-issues` for
+  split or escalation.
 
 If the human explicitly changes a stop state into a ready state, run
 `superpowers:triaging-issues` again with that new decision recorded as evidence.
@@ -161,6 +162,9 @@ Why this split:
 
 Do not create the child issues until the human has seen the exact child issue
 drafts and confirmed that version.
+
+For a complete coverage matrix and parent-scope preservation, use
+`superpowers:decomposing-issues`.
 
 ## Red Flags
 

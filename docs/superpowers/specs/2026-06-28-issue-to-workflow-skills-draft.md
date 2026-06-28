@@ -256,7 +256,8 @@ Choose one actionability state:
 - `out-of-scope`
 - `security-private-process`
 - `needs-maintainer-decision`
-- `needs-decomposition`
+- `needs-decomposition` (route to `superpowers:decomposing-issues` when the
+  split needs a coverage matrix and child issue drafts)
 - `blocked-by-resolution-loop` (only when re-triaging after a failed
   implementation/review loop)
 
@@ -293,6 +294,8 @@ starting work:
 - suggested first child issue
 
 Do not create child GitHub issues by default. Draft them for human approval.
+For coverage-preserving child issue drafts, route to
+`superpowers:decomposing-issues`.
 
 ### Triage Result Output
 
@@ -416,11 +419,13 @@ Use the `Actionability` field:
 
 - `needs-decomposition`
   - Do not implement.
-  - Present child issue drafts and ask which child to tackle first.
+  - Route to `superpowers:decomposing-issues` for coverage-preserving child
+    issue drafts and ask which child to tackle first.
 
 - `blocked-by-resolution-loop`
   - Stop the current fix loop.
-  - Summarize attempts, remaining findings, and propose split/escalation.
+  - Summarize attempts and remaining findings, then route to
+    `superpowers:decomposing-issues` for split or escalation.
 
 ### Resolution Loop Guard
 

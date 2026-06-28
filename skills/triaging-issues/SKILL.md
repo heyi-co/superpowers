@@ -147,10 +147,11 @@ Choose one actionability state:
 - `security-private-process` - possible vulnerability or sensitive report; stop
   public handling and point to `SECURITY.md` when present.
 - `needs-maintainer-decision` - policy/product/priority call needed before work.
-- `needs-decomposition` - issue is too broad or bundles independent work.
+- `needs-decomposition` - issue is too broad or bundles independent work;
+  recommend `superpowers:decomposing-issues`.
 - `blocked-by-resolution-loop` - re-triage after a failed fix/review loop shows
   scope is expanding, acceptance criteria changed, or repeated fixes reveal
-  independent problems.
+  independent problems; recommend `superpowers:decomposing-issues`.
 
 Actionability says what should happen next. It does not authorize GitHub
 mutation or implementation.
@@ -177,6 +178,8 @@ understood, implemented, reviewed, and verified independently.
 When splitting, draft child issue drafts for human approval. Do not create them.
 Each child draft should include title, problem, acceptance criteria,
 verification, dependencies, and out-of-scope items.
+For coverage-preserving child issue drafts, recommend
+`superpowers:decomposing-issues`.
 
 ## Triage Result
 
