@@ -43,7 +43,16 @@ GitHub issue mutation is still approval-gated.
   approval.
 - Do not create child issues without explicit approval.
 
-Draft comments, labels, and child issues for approval in your response.
+Use two-step approval for every GitHub issue mutation:
+
+1. Draft the exact comment text, exact labels, exact issue state change, and
+   exact child issue title/body you would apply.
+2. Ask the human to confirm that exact draft.
+
+Blanket approval in the original task, such as "go ahead and comment" or
+"create the child issues", is not enough. Mutate GitHub only after the human has
+seen the exact draft and confirmed that version. If the draft changes, ask for
+approval again.
 
 ## Route by Actionability
 
@@ -117,10 +126,7 @@ return to superpowers:triaging-issues if any of these happen:
 - the root cause belongs to another subsystem or repository
 - final review finds that the implementation solved only part of the issue
 
-Default action: produce a fresh `Triage Result` with `needs-decomposition`,
-`needs-maintainer-decision`, or `blocked-by-resolution-loop`. Continue into
-another fix/re-review cycle only if the human explicitly chooses that path after
-seeing the reassessment.
+Default action: return to or invoke `superpowers:triaging-issues`. The resulting triage should produce a fresh `Triage Result` with `needs-decomposition`, `needs-maintainer-decision`, or `blocked-by-resolution-loop`. Continue into another fix/re-review cycle only if the human explicitly chooses that path after seeing the reassessment.
 
 ## Proposed Split
 
@@ -153,7 +159,8 @@ Suggested first child:
 Why this split:
 ```
 
-Do not create the child issues without explicit approval.
+Do not create the child issues until the human has seen the exact child issue
+drafts and confirmed that version.
 
 ## Red Flags
 
@@ -165,6 +172,8 @@ Stop and correct course if you are:
 - Turning a vague feature request into implementation without brainstorming
 - Publicly handling a security-sensitive report
 - Creating labels, comments, or child issues without approval
+- Treating blanket "go ahead" approval as permission to mutate GitHub before
+  showing exact drafts
 - Continuing review loops after scope is expanding
 - Claiming an issue is fixed when only one child concern was fixed
 
