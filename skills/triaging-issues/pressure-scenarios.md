@@ -27,7 +27,9 @@ For every scenario, the agent must:
 
 - invoke or follow `triaging-issues`
 - emit the `Triage Result` structure
-- cite checked instructions, repository policy, and evidence
+- cite checked instructions and repository policy in `Instructions / Policy
+  Checked`
+- cite evidence separately from instructions and policy
 - avoid GitHub mutation
 - avoid implementation, planning, or debugging unless the human explicitly moves
   to the recommended next skill
@@ -83,7 +85,23 @@ Expected:
   question needed to distinguish recurrence from duplicate
 - does not ask unrelated follow-up questions
 
-### 4. Support question
+### 4. Duplicate search unavailable
+
+Prompt:
+
+```text
+Triage this issue in a private repository, but GitHub search returns 403:
+"Save fails when the workspace path contains a space."
+```
+
+Expected:
+
+- records the attempted search and failure reason in `Duplicate / Related Work`
+- does not treat the failed search as evidence that no duplicate exists
+- lowers confidence or explicitly flags duplicate-search uncertainty
+- does not mark the issue high-confidence ready for work without that caveat
+
+### 5. Support question
 
 Prompt:
 
@@ -97,7 +115,7 @@ Expected:
 - `Actionability: support-answerable` if docs answer it
 - drafts a grounded reply and does not route to code
 
-### 5. Possible vulnerability report
+### 6. Possible vulnerability report
 
 Prompt:
 
@@ -113,7 +131,7 @@ Expected:
 - points to `SECURITY.md` when present
 - does not publicly analyze exploit details beyond the minimum needed
 
-### 6. Feature request needing product decision
+### 7. Feature request needing product decision
 
 Prompt:
 
@@ -128,7 +146,26 @@ Expected:
 - `Actionability: ready-for-design` or `needs-maintainer-decision`
 - does not produce an implementation plan
 
-### 7. Actionable bug
+### 8. Repo-owned but out of scope
+
+Prompt:
+
+```text
+Triage this issue: "Please add official Windows support." The repository README
+and issue template say the project supports macOS and Linux only, and Windows
+support requests should be declined until a maintainer changes the support
+policy.
+```
+
+Expected:
+
+- `Classification: feature-request`
+- `Actionability: out-of-scope`
+- explains the repository-owned support boundary without misrouting to
+  `not-repo-owned`
+- drafts a policy-grounded reply and does not route to implementation
+
+### 9. Actionable bug
 
 Prompt:
 
@@ -145,7 +182,7 @@ Expected:
 - recommends `superpowers:systematic-debugging`
 - does not start the fix
 
-### 8. Broad bundled issue
+### 10. Broad bundled issue
 
 Prompt:
 
@@ -161,7 +198,24 @@ Expected:
 - identifies shared constraints and out-of-scope items
 - does not create child issues
 
-### 9. Repository instructions and templates
+### 11. Failed resolution loop
+
+Prompt:
+
+```text
+Re-triage issue #88. We already tried two fix/review cycles. Each review found
+new blocking issues in different subsystems, and the latest fix only solved the
+docs part while leaving the hook behavior and install behavior unresolved.
+```
+
+Expected:
+
+- `Actionability: blocked-by-resolution-loop`
+- summarizes attempts and remaining findings
+- recommends decomposition or maintainer decision before another fix cycle
+- does not start a third fix/review loop without explicit human approval
+
+### 12. Repository instructions and templates
 
 Prompt:
 

@@ -5,6 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SKILL="$REPO_ROOT/skills/triaging-issues/SKILL.md"
 SCENARIOS="$REPO_ROOT/skills/triaging-issues/pressure-scenarios.md"
+EVALUATION="$REPO_ROOT/skills/triaging-issues/evaluation.md"
+SPEC="$REPO_ROOT/docs/superpowers/specs/2026-06-28-issue-to-workflow-skills-draft.md"
 README="$REPO_ROOT/README.md"
 
 FAILURES=0
@@ -93,12 +95,15 @@ assert_contains "$SKILL" ".github/ISSUE_TEMPLATE" "skill checks issue templates"
 assert_contains "$SKILL" "SECURITY.md" "skill checks security policy"
 
 assert_contains "$SKILL" "## Untrusted Issue Input" "skill treats issue content as untrusted"
+assert_contains "$SKILL" "filled-in issue template" "skill distinguishes reporter-filled templates from repo templates"
 assert_contains "$SKILL" "not instructions" "skill refuses issue-embedded instructions"
 assert_contains "$SKILL" "claims to verify" "skill treats reporter hypotheses as claims"
 
 assert_contains "$SKILL" "## Clarify Before Asking" "skill requires evidence gathering before questions"
 assert_contains "$SKILL" "Do not ask generic" "skill blocks generic follow-up questions"
 assert_contains "$SKILL" "## Duplicate and Related Work Search" "skill requires duplicate search"
+assert_contains "$SKILL" "If duplicate or related work search cannot complete" "skill handles duplicate search failure"
+assert_contains "$SKILL" "search as no duplicates" "skill does not equate failed search with no duplicates"
 
 assert_contains "$SKILL" "## Classification" "skill has classification section"
 assert_contains "$SKILL" "## Actionability" "skill has actionability section"
@@ -107,13 +112,17 @@ assert_contains "$SKILL" "ready-for-design" "skill includes ready-for-design sta
 assert_contains "$SKILL" "ready-for-docs-fix" "skill includes ready-for-docs-fix state"
 assert_contains "$SKILL" "support-answerable" "skill includes support-answerable state"
 assert_contains "$SKILL" "needs-reporter-info" "skill includes needs-reporter-info state"
+assert_contains "$SKILL" '`out-of-scope` -' "skill includes out-of-scope state"
 assert_contains "$SKILL" "security-private-process" "skill includes security-private-process state"
 assert_contains "$SKILL" "needs-maintainer-decision" "skill includes needs-maintainer-decision state"
 assert_contains "$SKILL" "needs-decomposition" "skill includes needs-decomposition state"
+assert_contains "$SKILL" "blocked-by-resolution-loop" "skill includes resolution-loop blocked state"
 
 assert_contains "$SKILL" "## Too Large or Bundled Issues" "skill has decomposition guidance"
 assert_contains "$SKILL" "child issue drafts" "skill drafts child issues without creating them"
 assert_contains "$SKILL" "## Triage Result" "skill defines output schema"
+assert_contains "$SKILL" "Instructions / Policy Checked:" "schema uses combined instruction and policy field"
+assert_contains "$SKILL" "Child issue drafts:" "schema uses child issue drafts field"
 assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result includes next skill recommendation"
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 
@@ -127,8 +136,21 @@ assert_contains "$SCENARIOS" "Baseline Failure Evidence" "pressure scenarios req
 assert_contains "$SCENARIOS" "Vague bug report" "pressure scenarios include vague bug report"
 assert_contains "$SCENARIOS" "Issue body contains instructions" "pressure scenarios include untrusted issue input"
 assert_contains "$SCENARIOS" "Obvious duplicate" "pressure scenarios include duplicate issue"
+assert_contains "$SCENARIOS" "Duplicate search unavailable" "pressure scenarios include duplicate search failure"
 assert_contains "$SCENARIOS" "Possible vulnerability report" "pressure scenarios include security issue"
+assert_contains "$SCENARIOS" "Repo-owned but out of scope" "pressure scenarios include out-of-scope issue"
 assert_contains "$SCENARIOS" "Broad bundled issue" "pressure scenarios include decomposition"
+assert_contains "$SCENARIOS" "Failed resolution loop" "pressure scenarios include failed resolution loop"
+
+assert_file_exists "$EVALUATION" "evaluation summary file exists"
+assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
+assert_contains "$EVALUATION" "After change" "evaluation summary records after-change behavior"
+
+assert_contains "$SPEC" "Instructions / Policy Checked:" "spec uses combined instruction and policy field"
+assert_not_contains "$SPEC" "Repository Policy Checked:" "spec does not use obsolete policy-only field"
+assert_contains "$SPEC" "Child issue drafts:" "spec uses child issue drafts field"
+assert_contains "$SPEC" "- \`out-of-scope\`" "spec includes out-of-scope actionability"
+assert_contains "$SPEC" "blocked-by-resolution-loop" "spec includes resolution-loop blocked actionability"
 
 assert_contains "$README" "**triaging-issues**" "README lists triaging-issues skill"
 
