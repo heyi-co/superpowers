@@ -126,8 +126,8 @@ assert_contains "$SKILL" "Child issue drafts:" "schema uses child issue drafts f
 assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result includes next skill recommendation"
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 
-assert_not_contains "$SKILL" "working-from-issues" "v1 skill does not depend on deferred working-from-issues"
-assert_not_contains "$SKILL" "superpowers:code-review" "v1 skill does not reference unavailable strong review skill"
+assert_not_contains "$SKILL" "working-from-issues" "triage skill does not depend on working-from-issues"
+assert_not_contains "$SKILL" "superpowers:code-review" "triage skill does not reference unavailable strong review skill"
 
 assert_file_exists "$SCENARIOS" "pressure scenarios file exists"
 assert_contains "$SCENARIOS" "Codex App" "pressure scenarios cover Codex App"

@@ -1,6 +1,7 @@
 # Issue-to-Workflow Skills Draft
 
-Status: discussion draft, not approved for implementation.
+Status: implementation draft. `triaging-issues` shipped first; this follow-up
+adds `working-from-issues` as the consumer of the `Triage Result` contract.
 
 ## Goal
 
@@ -32,12 +33,12 @@ The target shape uses two skills with a stable handoff:
 The handoff is the contract. The second skill should not repeat triage. The
 first skill should not start implementation.
 
-V1 should ship only `triaging-issues`. It solves the first real gap: agents
-starting work from raw, ambiguous, duplicate, unsupported, or unsafe issues.
-`working-from-issues` remains a deferred companion design until the triage skill
-has behavior evidence from pressure scenarios.
+The first implementation shipped only `triaging-issues`. It solved the first
+real gap: agents starting work from raw, ambiguous, duplicate, unsupported, or
+unsafe issues. After pressure-scenario evidence for triage, the follow-up
+implementation adds `working-from-issues` to consume the stable handoff.
 
-V1 flow:
+Phase 1 flow:
 
 ```text
 Issue input
@@ -46,7 +47,7 @@ Issue input
   -> human decision or existing Superpowers skill selected from the result
 ```
 
-Deferred target flow:
+Follow-up flow:
 
 ```text
 Issue input
@@ -346,10 +347,11 @@ If a section does not apply, write `None`.
 - Collapsing multiple independent issues into one implementation plan
 - Mutating GitHub without explicit approval
 
-## Deferred Skill 2: working-from-issues
+## Skill 2: working-from-issues
 
-Do not implement this in v1. Keep this section as the intended consumer of the
-`Triage Result` contract after `triaging-issues` has behavior evidence.
+Implement this after `triaging-issues` has behavior evidence. This is the
+consumer of the `Triage Result` contract; it must not repeat raw triage or skip
+directly into implementation.
 
 ### Trigger
 
@@ -483,7 +485,7 @@ Why this split:
 - Creating child issues without approval
 - Claiming an issue is fixed when only one child concern was fixed
 
-## What To Leave Out of V1
+## What To Leave Out by Default
 
 - automatic label edits
 - automatic issue comments
@@ -572,7 +574,7 @@ Phase 1:
 
 Phase 2:
 
-- Add `working-from-issues` only after `triaging-issues` has passed behavior
+- Add `working-from-issues` after `triaging-issues` has passed behavior
   pressure scenarios.
 - Add structural tests that each actionability state routes to the correct
   existing skill or stops.
@@ -580,7 +582,7 @@ Phase 2:
 
 Phase 3:
 
-- For the deferred `working-from-issues` skill, add workflow pressure scenarios:
+- For `working-from-issues`, add workflow pressure scenarios:
   1. actionable bug -> routes to `superpowers:systematic-debugging`
   2. feature request -> routes to `superpowers:brainstorming`
   3. docs fix -> stops at narrow docs workflow unless doc tests exist
@@ -603,8 +605,8 @@ Phase 3:
 
 4. Should the resolution loop guard use the proposed default of two blocking
    fix/re-review cycles before reassessment, or should it be softer and based
-   only on "scope is expanding" signals? This is deferred until
-   `working-from-issues`.
+   only on "scope is expanding" signals? `working-from-issues` uses two full
+   blocking cycles as the initial default; future evals can tune it.
 
 5. Should splitting produce child issue drafts only, or should a later
    approval-gated mode create the child GitHub issues?
