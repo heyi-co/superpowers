@@ -103,10 +103,11 @@ Do not write code for these actionability states:
   when present.
 - `needs-maintainer-decision` - present the exact decision needed and the
   tradeoff; do not implement.
-- `needs-decomposition` - present child issue drafts and ask which child to
-  tackle first; do not create child issues.
+- `needs-decomposition` - route to `superpowers:decomposing-issues` for
+  coverage-preserving child issue drafts; do not create child issues.
 - `blocked-by-resolution-loop` - stop the current fix loop, summarize attempts
-  and remaining findings, then propose split or escalation.
+  and remaining findings, then route to `superpowers:decomposing-issues` for
+  split or escalation.
 
 If the human explicitly changes a stop state into a ready state, run
 `superpowers:triaging-issues` again with that new decision recorded as evidence.
@@ -128,39 +129,24 @@ return to superpowers:triaging-issues if any of these happen:
 
 Default action: return to or invoke `superpowers:triaging-issues`. The resulting triage should produce a fresh `Triage Result` with `needs-decomposition`, `needs-maintainer-decision`, or `blocked-by-resolution-loop`. Continue into another fix/re-review cycle only if the human explicitly chooses that path after seeing the reassessment.
 
-## Proposed Split
+## Decomposition Handoff
 
-When scope needs to split, draft child issues:
+When scope needs to split, do not draft child issues in this skill. Stop and
+route to `superpowers:decomposing-issues`, which owns coverage-preserving child
+issue drafts, the coverage matrix, dependency order, and parent disposition.
+
+If the human asks what will happen next, summarize only the handoff:
 
 ```markdown
-## Proposed Split
+## Decomposition Handoff
 
 Parent Issue:
-- Keep as umbrella / close after children / replace with child issues:
-
-Child 1:
-- Title:
-- Problem:
-- Acceptance criteria:
-- Verification:
-- Dependencies:
-- Out of scope:
-
-Child 2:
-- Title:
-- Problem:
-- Acceptance criteria:
-- Verification:
-- Dependencies:
-- Out of scope:
-
-Suggested first child:
-
-Why this split:
+Reason decomposition is needed:
+Recommended Next Superpowers Skill: superpowers:decomposing-issues
 ```
 
-Do not create the child issues until the human has seen the exact child issue
-drafts and confirmed that version.
+Do not create child issues, draft child issue bodies, or replace the
+decomposition skill with a local split template.
 
 ## Red Flags
 

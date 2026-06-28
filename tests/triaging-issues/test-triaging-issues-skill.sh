@@ -121,10 +121,12 @@ assert_contains "$SKILL" "needs-decomposition" "skill includes needs-decompositi
 assert_contains "$SKILL" "blocked-by-resolution-loop" "skill includes resolution-loop blocked state"
 
 assert_contains "$SKILL" "## Too Large or Bundled Issues" "skill has decomposition guidance"
-assert_contains "$SKILL" "child issue drafts" "skill drafts child issues without creating them"
+assert_contains "$SKILL" "During triage, explain why decomposition is needed" "skill limits triage to decomposition handoff"
+assert_contains "$SKILL" "coverage-preserving" "skill does not decompose during triage"
 assert_contains "$SKILL" "## Triage Result" "skill defines output schema"
 assert_contains "$SKILL" "Instructions / Policy Checked:" "schema uses combined instruction and policy field"
-assert_contains "$SKILL" "Child issue drafts:" "schema uses child issue drafts field"
+assert_contains "$SKILL" "Decomposition Handoff:" "schema uses decomposition handoff field"
+assert_not_contains "$SKILL" "Child issue drafts:" "schema no longer requires child issue drafts"
 assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result includes next skill recommendation"
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 
@@ -150,7 +152,10 @@ assert_contains "$EVALUATION" "After change" "evaluation summary records after-c
 
 assert_contains "$SPEC" "Instructions / Policy Checked:" "spec uses combined instruction and policy field"
 assert_not_contains "$SPEC" "Repository Policy Checked:" "spec does not use obsolete policy-only field"
-assert_contains "$SPEC" "Child issue drafts:" "spec uses child issue drafts field"
+assert_contains "$SPEC" "Decomposition Handoff:" "spec uses decomposition handoff field"
+assert_not_contains "$SPEC" "Child issue drafts:" "spec no longer requires triage child issue drafts"
+assert_not_contains "$SPEC" "two skills with a stable handoff" "spec no longer describes a two-skill architecture"
+assert_not_contains "$SPEC" "## Proposed Split" "spec no longer embeds legacy split template"
 assert_contains "$SPEC" "- \`out-of-scope\`" "spec includes out-of-scope actionability"
 assert_contains "$SPEC" "blocked-by-resolution-loop" "spec includes resolution-loop blocked actionability"
 
