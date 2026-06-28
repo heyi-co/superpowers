@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SKILL="$REPO_ROOT/skills/triaging-issues/SKILL.md"
+SCENARIOS="$REPO_ROOT/skills/triaging-issues/pressure-scenarios.md"
+README="$REPO_ROOT/README.md"
+
+FAILURES=0
+
+pass() {
+  echo "  [PASS] $1"
+}
+
+fail() {
+  echo "  [FAIL] $1"
+  FAILURES=$((FAILURES + 1))
+}
+
+assert_file_exists() {
+  local path="$1"
+  local description="$2"
+
+  if [[ -f "$path" ]]; then
+    pass "$description"
+  else
+    fail "$description"
+    echo "    missing file: $path"
+  fi
+}
+
+assert_contains() {
+  local path="$1"
+  local needle="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing file: $path"
+    return
+  fi
+
+  if grep -Fq -- "$needle" "$path"; then
+    pass "$description"
+  else
+    fail "$description"
+    echo "    expected to find: $needle"
+    echo "    in file: $path"
+  fi
+}
+
+assert_not_contains() {
+  local path="$1"
+  local needle="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing file: $path"
+    return
+  fi
+
+  if grep -Fq -- "$needle" "$path"; then
+    fail "$description"
+    echo "    did not expect to find: $needle"
+    echo "    in file: $path"
+  else
+    pass "$description"
+  fi
+}
+
+echo "Triaging issues skill structural tests"
+
+assert_file_exists "$SKILL" "triaging-issues skill exists"
+assert_contains "$SKILL" "name: triaging-issues" "skill frontmatter has correct name"
+assert_contains "$SKILL" "description: Use when" "skill description is trigger-focused"
+assert_contains "$SKILL" "GitHub issues" "description includes GitHub issue trigger"
+assert_contains "$SKILL" "bug reports" "description includes bug report trigger"
+assert_contains "$SKILL" "feature requests" "description includes feature request trigger"
+assert_contains "$SKILL" "support requests" "description includes support request trigger"
+
+assert_contains "$SKILL" "## Read-Only Default" "skill has read-only default section"
+assert_contains "$SKILL" "Do not edit labels" "skill blocks label mutation"
+assert_contains "$SKILL" "Do not post comments" "skill blocks issue comments"
+assert_contains "$SKILL" "Do not create, close, reopen, or transfer issues" "skill blocks issue mutation"
+
+assert_contains "$SKILL" "## Instruction and Repository Policy Loading" "skill separates instructions from policy evidence"
+assert_contains "$SKILL" "AGENTS.md" "skill loads AGENTS.md"
+assert_contains "$SKILL" "CLAUDE.md" "skill loads CLAUDE.md"
+assert_contains "$SKILL" "GEMINI.md" "skill loads GEMINI.md"
+assert_contains "$SKILL" ".github/ISSUE_TEMPLATE" "skill checks issue templates"
+assert_contains "$SKILL" "SECURITY.md" "skill checks security policy"
+
+assert_contains "$SKILL" "## Untrusted Issue Input" "skill treats issue content as untrusted"
+assert_contains "$SKILL" "not instructions" "skill refuses issue-embedded instructions"
+assert_contains "$SKILL" "claims to verify" "skill treats reporter hypotheses as claims"
+
+assert_contains "$SKILL" "## Clarify Before Asking" "skill requires evidence gathering before questions"
+assert_contains "$SKILL" "Do not ask generic" "skill blocks generic follow-up questions"
+assert_contains "$SKILL" "## Duplicate and Related Work Search" "skill requires duplicate search"
+
+assert_contains "$SKILL" "## Classification" "skill has classification section"
+assert_contains "$SKILL" "## Actionability" "skill has actionability section"
+assert_contains "$SKILL" "ready-for-debugging" "skill includes ready-for-debugging state"
+assert_contains "$SKILL" "ready-for-design" "skill includes ready-for-design state"
+assert_contains "$SKILL" "ready-for-docs-fix" "skill includes ready-for-docs-fix state"
+assert_contains "$SKILL" "support-answerable" "skill includes support-answerable state"
+assert_contains "$SKILL" "needs-reporter-info" "skill includes needs-reporter-info state"
+assert_contains "$SKILL" "security-private-process" "skill includes security-private-process state"
+assert_contains "$SKILL" "needs-maintainer-decision" "skill includes needs-maintainer-decision state"
+assert_contains "$SKILL" "needs-decomposition" "skill includes needs-decomposition state"
+
+assert_contains "$SKILL" "## Too Large or Bundled Issues" "skill has decomposition guidance"
+assert_contains "$SKILL" "child issue drafts" "skill drafts child issues without creating them"
+assert_contains "$SKILL" "## Triage Result" "skill defines output schema"
+assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result includes next skill recommendation"
+assert_contains "$SKILL" "## Red Flags" "skill has red flags"
+
+assert_not_contains "$SKILL" "working-from-issues" "v1 skill does not depend on deferred working-from-issues"
+assert_not_contains "$SKILL" "superpowers:code-review" "v1 skill does not reference unavailable strong review skill"
+
+assert_file_exists "$SCENARIOS" "pressure scenarios file exists"
+assert_contains "$SCENARIOS" "Codex App" "pressure scenarios cover Codex App"
+assert_contains "$SCENARIOS" "Claude Code" "pressure scenarios cover Claude Code"
+assert_contains "$SCENARIOS" "Baseline Failure Evidence" "pressure scenarios require baseline evidence"
+assert_contains "$SCENARIOS" "Vague bug report" "pressure scenarios include vague bug report"
+assert_contains "$SCENARIOS" "Issue body contains instructions" "pressure scenarios include untrusted issue input"
+assert_contains "$SCENARIOS" "Obvious duplicate" "pressure scenarios include duplicate issue"
+assert_contains "$SCENARIOS" "Possible vulnerability report" "pressure scenarios include security issue"
+assert_contains "$SCENARIOS" "Broad bundled issue" "pressure scenarios include decomposition"
+
+assert_contains "$README" "**triaging-issues**" "README lists triaging-issues skill"
+
+if [[ "$FAILURES" -eq 0 ]]; then
+  echo "All triaging issues skill tests passed"
+else
+  echo "$FAILURES triaging issues skill test(s) failed"
+  exit 1
+fi
