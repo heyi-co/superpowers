@@ -81,6 +81,8 @@ assert_contains "$SKILL" "GitHub issues" "description includes GitHub issue trig
 assert_contains "$SKILL" "bug reports" "description includes bug report trigger"
 assert_contains "$SKILL" "feature requests" "description includes feature request trigger"
 assert_contains "$SKILL" "support requests" "description includes support request trigger"
+assert_contains "$SKILL" "before a Triage Result exists" "description limits triage to pre-handoff intake"
+assert_contains "$SKILL" "do not use when consuming an existing Triage Result" "description excludes downstream triage result consumption"
 
 assert_contains "$SKILL" "## Read-Only Default" "skill has read-only default section"
 assert_contains "$SKILL" "Do not edit labels" "skill blocks label mutation"

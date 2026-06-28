@@ -66,6 +66,8 @@ assert_contains "$SKILL" "Triage Result" "skill consumes Triage Result"
 assert_contains "$SKILL" "superpowers:triaging-issues" "skill invokes triaging when no triage result exists"
 assert_contains "$SKILL" "Do not start from a raw issue" "skill blocks raw issue implementation"
 assert_contains "$SKILL" "Actionability:" "skill keys routing on actionability"
+assert_contains "$SKILL" "do not re-run triage" "skill avoids re-triaging valid triage results"
+assert_contains "$SKILL" "Consume the existing" "skill consumes existing actionability directly"
 
 assert_contains "$SKILL" "## GitHub Mutation Gate" "skill keeps GitHub mutation approval-gated"
 assert_contains "$SKILL" "Do not post comments" "skill blocks issue comments without approval"
@@ -114,6 +116,7 @@ assert_contains "$SCENARIOS" "GitHub mutation pressure" "scenarios include mutat
 assert_file_exists "$EVALUATION" "evaluation summary file exists"
 assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
 assert_contains "$EVALUATION" "After change" "evaluation summary records after-change behavior"
+assert_contains "$EVALUATION" "Full pressure matrix" "evaluation summary records full pressure matrix"
 assert_contains "$EVALUATION" "Codex CLI 0.142.3" "evaluation summary records Codex version"
 assert_contains "$EVALUATION" "Claude Code 2.1.185" "evaluation summary records Claude version"
 

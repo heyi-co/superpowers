@@ -1,6 +1,6 @@
 ---
 name: triaging-issues
-description: Use when reviewing, triaging, clarifying, deduplicating, classifying, or deciding next actions for GitHub issues, bug reports, feature requests, support requests, or pasted issue reports
+description: Use when reviewing, triaging, clarifying, deduplicating, classifying, or deciding next actions for raw GitHub issues, bug reports, feature requests, support requests, or pasted issue reports before a Triage Result exists; do not use when consuming an existing Triage Result
 ---
 
 # Triaging Issues

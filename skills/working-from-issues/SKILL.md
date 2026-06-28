@@ -25,6 +25,13 @@ Read the `Actionability:` field from the `Triage Result`. If the actionability
 state is missing, ambiguous, or conflicts with the evidence, return to
 `superpowers:triaging-issues` instead of guessing.
 
+If a valid `Triage Result` is present, do not re-run triage just because the
+issue text mentions labels, feature requests, decomposition, triage, or other
+issue-work words. Consume the existing `Actionability:` field and route from it.
+The only exceptions are raw issue input with no `Triage Result`, missing or
+conflicting actionability, an explicit human decision that changes a stop state
+into a ready state, or the resolution loop guard.
+
 ## GitHub Mutation Gate
 
 Working from an issue may lead to code or docs changes for ready states, but
