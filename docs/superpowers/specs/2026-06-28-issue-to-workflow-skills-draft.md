@@ -1,9 +1,10 @@
 # Issue-to-Workflow Skills Draft
 
 Status: implementation draft. `triaging-issues` shipped first,
-`working-from-issues` consumes the `Triage Result` contract, and
+`working-from-issues` consumes the `Triage Result` contract,
 `decomposing-issues` owns coverage-preserving child issue drafts when triage
-or a failed resolution loop shows the issue is too broad.
+or a failed resolution loop shows the issue is too broad, and
+`reconciling-issues` audits decomposed parent completion before closure.
 
 ## Goal
 
@@ -38,6 +39,12 @@ The target shape uses three skills with stable handoffs:
    - Produces coverage-preserving child issue drafts with `Scope Atoms` and a
      `Coverage Matrix`.
    - Does not replace triage, implementation, or GitHub mutation approval.
+4. `reconciling-issues`
+   - Consumes a parent closure contract, issue decomposition, child issue
+     parent/atom links, or explicit human mapping with parent evidence.
+   - Produces a coverage ledger and parent disposition.
+   - Drafts exact parent close/comment mutations only after reconciliation and
+     exact-draft approval.
 
 The handoff is the contract. `triaging-issues` should not start
 implementation or draft full child issue bodies. `working-from-issues` should
@@ -78,6 +85,15 @@ Issue input
   -> Issue Decomposition with coverage-preserving child issue drafts
   -> selected child gets fresh triage or an explicit human decision
   -> working-from-issues
+```
+
+Reconciliation flow:
+
+```text
+Decomposed parent issue
+  -> child issues are worked through working-from-issues
+  -> reconciling-issues when parent completion or closure is requested
+  -> Parent Issue Reconciliation with coverage ledger and mutation preview
 ```
 
 ## Why This Belongs in Superpowers

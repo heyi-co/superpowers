@@ -221,6 +221,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 - **dispatching-parallel-agents** - Concurrent subagent workflows
 - **triaging-issues** - Read-only issue intake, classification, deduplication, and routing
 - **decomposing-issues** - Split broad or blocked issues into coverage-preserving child issue drafts
+- **reconciling-issues** - Audit decomposed parent issues against child outcomes before closure
 - **working-from-issues** - Route triaged issues into the right Superpowers workflow
 - **requesting-code-review** - Pre-review checklist
 - **code-review** - Max-grade JSON-first PR/branch/diff review
