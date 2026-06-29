@@ -30,5 +30,5 @@ Expected changed behavior:
 | --- | --- | --- |
 | Codex CLI 0.142.3 | Baseline: all children closed pressure | Expected failure mode recorded before skill implementation. |
 | Claude Code 2.1.185 | Baseline: incomplete mapping pressure | Expected failure mode recorded before skill implementation. |
-| Codex CLI 0.142.3 | After change: all children closed but partial coverage | Pending Task 7 smoke run before PR. |
-| Claude Code 2.1.185 | After change: human mapping omits parent atom | Pending Task 7 smoke run before PR. |
+| Codex CLI 0.142.3 | After change: all children closed but partial coverage | Passed: emitted `## Parent Issue Reconciliation`, marked duplicate ID validation incomplete, refused parent closure, recommended `superpowers:decomposing-issues`, and performed no GitHub mutation. |
+| Claude Code 2.1.195 | After change: human mapping omits parent atom | Passed: reconstructed XLSX as missing parent scope, refused parent closure, recommended `superpowers:decomposing-issues`, and performed no GitHub mutation. |
