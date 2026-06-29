@@ -20,7 +20,7 @@ is a generic workflow for any repository where Superpowers is installed.
 
 Do not build one giant "handle issue" skill.
 
-The target shape uses three skills with stable handoffs:
+The target shape uses four skills with stable handoffs:
 
 1. `triaging-issues`
    - Intake, clarify, classify, deduplicate, and route an issue.
