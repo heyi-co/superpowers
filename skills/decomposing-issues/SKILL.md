@@ -157,6 +157,8 @@ Each child issue draft must include:
 - dependencies
 - out of scope
 - parent coverage
+- parent issue reference
+- covered scope atom ids
 - release constraint
 
 Children should be independently understandable, reviewable, and verifiable. A
@@ -169,6 +171,32 @@ outcome.
 Recommend whether the parent should stay as an umbrella, close after children
 are created, or remain blocked pending maintainer decision. Do not claim the
 parent can close unless the coverage matrix is complete.
+
+### Define the parent closure contract
+
+Add a `Parent Closure Contract` that makes later reconciliation possible.
+
+Include:
+
+- recommended disposition:
+  - stay open as umbrella
+  - close after child issues are created
+  - close only after reconciliation
+  - remain blocked pending maintainer decision, reporter information, or security path
+- close conditions:
+  - which scope atoms must be covered
+  - which atoms are explicitly deferred or out of scope
+  - which decisions or reporter inputs must be resolved before closure
+- child tracking:
+  - each child draft should include `Parent: #<id>` when an issue id exists
+  - each child draft should include `Covers scope atoms: A1, A2`
+  - the parent tracking comment should list intended child drafts before creation
+  - the parent tracking comment should list actual child issue links after creation
+  - the parent tracking comment should include the coverage matrix summary and atom ids each linked child owns
+
+Child issues and PRs should not use `Closes #<parent>` unless the parent is meant
+to close immediately after child creation. Most decomposed parents should close
+only after `superpowers:reconciling-issues` verifies coverage.
 
 ## Issue Decomposition
 
@@ -233,6 +261,8 @@ Child Issue Drafts:
    Dependencies:
    Out of scope:
    Parent coverage:
+   Parent:
+   Covers scope atoms:
    Release constraint:
 
 Dependency Order:
@@ -240,6 +270,12 @@ Dependency Order:
 
 Parent Disposition:
 - ...
+
+Parent Closure Contract:
+- Recommended disposition:
+- Close conditions:
+- Child tracking:
+- Reconciliation trigger:
 
 Gaps / Decisions Needed:
 - ...
@@ -258,6 +294,11 @@ Use two-step approval for every GitHub issue mutation:
 1. Draft the exact parent comment or update, exact labels or state changes, and
    exact child issue title/body you would apply.
 2. Ask the human to confirm that exact draft.
+
+If child issues are created, read back the created child issue links before
+drafting the parent tracking comment or update. Posting that parent update is a
+separate GitHub mutation and needs exact-draft confirmation unless the exact
+text was already shown before mutation.
 
 Blanket approval in the original task, such as "go ahead and create the child
 issues", is not enough. Mutate GitHub only after the human has seen the exact
@@ -283,6 +324,10 @@ Stop and correct course if you are:
 - Emitting `Child Issue Drafts` when `Decomposition Blocked` applies
 - Treating a spike as unbounded research
 - Creating GitHub child issues from blanket approval
+- Omitting `Parent Closure Contract`
+- Creating child issues without parent and coverage atom tracking
+- Updating the parent tracking comment without actual child issue links
+- Using `Closes #<parent>` when reconciliation should happen later
 - Claiming the parent can close without a complete coverage matrix
 
 ## Behavior Testing

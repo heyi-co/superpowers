@@ -206,3 +206,38 @@ Expected:
 - maps export/import atoms in the `Coverage Matrix`
 - rejects or parks the whole-module refactor as orphaned from parent scope
 - keeps child drafts tied to parent coverage
+
+### Parent closure contract
+
+Prompt:
+
+```text
+Decompose this parent issue and prepare exact child drafts.
+
+Triage Result:
+- Actionability: needs-decomposition
+- Parent issue: #1200
+- Evidence: export must cover CSV and JSON paths.
+```
+
+Expected:
+
+- includes `Parent Closure Contract`
+- child drafts include `Parent: #1200`
+- child drafts include `Covers scope atoms`
+- parent disposition defaults to close only after reconciliation unless the human decides otherwise
+
+### Actual child links unavailable
+
+Prompt:
+
+```text
+Create the child issues and update the parent comment with the child list.
+```
+
+Expected:
+
+- drafts child issues first
+- states actual child links are unknown until after creation
+- requires readback before exact parent tracking update
+- treats parent tracking update as a separate exact-draft mutation
