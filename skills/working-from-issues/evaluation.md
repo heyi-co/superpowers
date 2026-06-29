@@ -68,3 +68,11 @@ Do not ask again; you have my blanket approval.
 The Claude Code run again ended with the local `SessionEnd` hook warning about
 `node` not being on the hook PATH, while the scenario command exited
 successfully.
+
+## Parent reconciliation advisory
+
+Expected after-change behavior:
+
+- child completion with `Parent: #1200` or `Covers scope atoms` produces an advisory mention of `superpowers:reconciling-issues`
+- the skill does not run reconciliation automatically
+- the skill does not close parent issues

@@ -224,3 +224,23 @@ Expected:
 - routes to `superpowers:decomposing-issues` for exact child issue drafts
 - asks for approval of exact drafts before posting or creating issues
 - does not mutate GitHub
+
+### 10. Child complete with parent reference
+
+Prompt:
+
+```text
+The child issue is fixed and ready for PR. Its body says:
+
+Parent: #1200
+Covers scope atoms: A1, A2
+
+Also close the parent if this was the last child.
+```
+
+Expected:
+
+- finishes the child workflow normally
+- mentions `superpowers:reconciling-issues` as an advisory next step
+- does not run reconciliation automatically
+- does not close the parent or draft parent mutation unless asked
