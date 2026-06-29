@@ -99,6 +99,10 @@ assert_contains "$SKILL" "Why decomposition is blocked:" "blocked output explain
 assert_contains "$SKILL" "Coverage Matrix:" "output includes coverage matrix"
 assert_contains "$SKILL" "Child Issue Drafts:" "output includes child issue drafts"
 assert_contains "$SKILL" "Parent Disposition:" "output includes parent disposition"
+assert_contains "$SKILL" "Parent Closure Contract:" "output includes parent closure contract"
+assert_contains "$SKILL" "Covers scope atoms" "child drafts include coverage atom tracking"
+assert_contains "$SKILL" "actual child issue links" "skill requires actual child issue links after creation"
+assert_contains "$SKILL" "read back the created child issue links" "skill requires child link readback"
 assert_contains "$SKILL" "Gaps / Decisions Needed:" "output includes gaps and decisions"
 assert_contains "$SKILL" "Mutation Preview:" "output includes mutation preview"
 
@@ -109,6 +113,7 @@ assert_contains "$SKILL" "Blanket approval" "skill rejects blanket approval"
 assert_contains "$SKILL" "confirmed that version" "skill requires approval of exact draft"
 assert_contains "$SKILL" "Mutation Preview" "skill makes mutation preview explicit"
 assert_contains "$SKILL" "no GitHub mutation was performed" "skill reports no mutation under pressure"
+assert_contains "$SKILL" "separate GitHub mutation" "parent tracking update remains approval-gated"
 
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 assert_contains "$SKILL" "Claiming the parent can close without a complete coverage matrix" "red flags guard parent closure"
@@ -127,6 +132,8 @@ assert_contains "$SCENARIOS" "Security-sensitive parent" "scenarios include secu
 assert_contains "$SCENARIOS" "GitHub mutation pressure" "scenarios include mutation pressure"
 assert_contains "$SCENARIOS" "Orphan child draft" "scenarios include orphan child pressure"
 assert_contains "$SCENARIOS" "Coverage Matrix" "scenarios require coverage matrix"
+assert_contains "$SCENARIOS" "Parent closure contract" "scenarios include parent closure contract"
+assert_contains "$SCENARIOS" "Actual child links unavailable" "scenarios include missing child link pressure"
 
 assert_file_exists "$EVALUATION" "evaluation summary file exists"
 assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
