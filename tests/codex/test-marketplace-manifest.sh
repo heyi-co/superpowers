@@ -51,11 +51,12 @@ if not plugin_manifest.exists():
 
 manifest = json.loads(plugin_manifest.read_text(encoding="utf-8"))
 assert_equal(manifest.get("name"), plugin.get("name"), "plugin manifest name")
-assert_equal(
-    manifest.get("hooks"),
-    "./hooks/hooks-codex.json",
-    "Codex hooks manifest",
-)
+if "hooks" in manifest:
+    raise AssertionError("Codex hooks manifest should not be configured")
+
+hooks_manifest = repo_root / "hooks" / "hooks-codex.json"
+if hooks_manifest.exists():
+    raise AssertionError("hooks/hooks-codex.json should not exist")
 
 print("Codex marketplace manifest looks good")
 PY
