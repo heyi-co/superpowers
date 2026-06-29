@@ -30,12 +30,16 @@ Require one of:
 - a human-provided mapping of parent scope to child issues, plus enough parent
   issue evidence to independently reconstruct the parent scope
 
-If the parent issue body and decomposition contract are both unavailable, return
-`## Parent Issue Reconciliation Blocked` with `not-reconcilable`. Do not close
-from child links or a supplied mapping alone.
+Treat a source as accepted evidence only when it lets you independently
+reconstruct parent scope. A human-provided mapping can help locate coverage,
+but it is accepted only when paired with enough parent issue evidence to
+reconstruct the parent scope inventory.
 
-A human-provided mapping can help locate coverage, but it must not replace the
-parent scope inventory.
+If no accepted evidence form is present, or the evidence still cannot
+reconstruct parent scope, return `## Parent Issue Reconciliation Blocked` with
+`not-reconcilable`. Do not close from child links or a supplied mapping alone.
+
+The human-provided mapping must not replace the parent scope inventory.
 
 If the user gives a raw issue with no decomposition, parent evidence, or child
 mapping, return to `superpowers:triaging-issues` instead of guessing.
@@ -136,6 +140,7 @@ maintainer decision.
 
 For non-close dispositions, include `Recommended Next Superpowers Skill`:
 
+- `keep-open -> superpowers:decomposing-issues`
 - `needs-follow-up-children -> superpowers:decomposing-issues`
 - `needs-maintainer-decision -> superpowers:triaging-issues`
 - `needs-reporter-info -> superpowers:triaging-issues`
