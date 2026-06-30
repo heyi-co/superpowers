@@ -232,7 +232,9 @@ draft changes, ask for approval again.
 When the prompt requests mutation, the `Mutation Preview` section must state
 that no GitHub mutation was performed, blanket approval is insufficient, and the
 human must confirm the exact draft before any comments, labels, state changes,
-or follow-up child issues are created.
+or parent closure happens. Follow-up child issue creation belongs to
+`superpowers:decomposing-issues`; this skill may recommend that handoff but must
+not create child issues.
 
 ## Red Flags
 

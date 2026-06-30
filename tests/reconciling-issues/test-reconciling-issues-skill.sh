@@ -100,6 +100,7 @@ assert_contains "$SKILL" "Do not close" "skill blocks automatic parent close"
 assert_contains "$SKILL" "Do not post comments" "skill blocks comments without approval"
 assert_contains "$SKILL" "Do not edit labels" "skill blocks label mutation"
 assert_contains "$SKILL" "Do not create child issues" "skill blocks child issue creation"
+assert_not_contains "$SKILL" "follow-up child issues are created" "skill never creates follow-up child issues"
 assert_contains "$SKILL" "two-step approval" "skill requires two-step approval"
 assert_contains "$SKILL" "Blanket approval" "skill rejects blanket approval"
 
