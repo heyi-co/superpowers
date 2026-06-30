@@ -148,6 +148,28 @@ Recommended Next Superpowers Skill: superpowers:decomposing-issues
 Do not create child issues, draft child issue bodies, or replace the
 decomposition skill with a local split template.
 
+## Parent Reconciliation Advisory
+
+`working-from-issues` should not run reconciliation automatically.
+
+After completing work for a child issue, if the child issue has `Parent: #<id>`,
+`Covers scope atoms`, or another clear parent/coverage reference, mention that
+the parent may need `superpowers:reconciling-issues`.
+
+If the human explicitly asks to reconcile, close, check, or finish the parent,
+stop parent handling in this skill and route that parent request to
+`superpowers:reconciling-issues`. That is an explicit handoff, not automatic
+reconciliation.
+
+This is advisory only:
+
+- Do not close the parent.
+- Do not post a parent comment.
+- Do not edit parent labels or state.
+- Do not block finishing the child PR unless the human asks to reconcile, close,
+  check, or finish the parent.
+- Do not run reconciliation automatically.
+
 ## Red Flags
 
 Stop and correct course if you are:
@@ -162,6 +184,8 @@ Stop and correct course if you are:
   showing exact drafts
 - Continuing review loops after scope is expanding
 - Claiming an issue is fixed when only one child concern was fixed
+- Closing a parent issue after a child issue finishes
+- Running parent reconciliation automatically without a human request
 
 ## Behavior Testing
 

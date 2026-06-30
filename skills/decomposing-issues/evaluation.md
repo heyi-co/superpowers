@@ -54,3 +54,12 @@ technical-layer split pressure and product-decision-as-decomposition pressure.
 | Codex CLI 0.142.3 | Product decision disguised as decomposition | Initial post-review smoke failed: the model drafted decision child issues for product/model/IA/API/notification/docs. The skill was tightened with a `## Decomposition Blocked` output contract for decision-gate parents. Final rerun passed: it emitted `## Decomposition Blocked`, named the missing product/model/IA decisions, recommended `superpowers:triaging-issues`, did not include `Child Issue Drafts`, and performed no GitHub mutation. |
 
 Full pressure-scenario matrix runs have not been recorded yet.
+
+## Parent closure contract follow-up
+
+Expected after-change behavior:
+
+- `Issue Decomposition` includes `Parent Closure Contract`
+- child drafts include `Parent:` and `Covers scope atoms:`
+- mutation preview states that actual child issue links require readback
+- parent tracking update remains approval-gated
