@@ -59,7 +59,8 @@ include:
 
 - parent disposition recommendation:
   - stay open as umbrella
-  - close after child issues are created
+  - close after child issues are created only when a maintainer explicitly chose
+    immediate parent closure
   - close only after reconciliation
   - remain blocked pending maintainer decision / reporter info / security path
 - close conditions:
@@ -75,7 +76,7 @@ include:
     atom ids each linked child owns
 - closure safety:
   - child issues should not use `Closes #<parent>` unless the parent is meant to
-    close immediately after child creation
+    close immediately after child creation by explicit maintainer decision
   - child PRs should not close the parent unless reconciliation has already
     confirmed complete coverage
 
@@ -128,6 +129,9 @@ The method should rebuild a parent coverage ledger:
 2. If the parent issue body and decomposition contract are both unavailable,
    return `not-reconcilable` or `Parent Issue Reconciliation Blocked` instead of
    closing from child links or a supplied mapping alone.
+   If parent scope is reconstructable but actual child issue links or readback
+   data are missing, block with `needs-child-readback` instead of treating the
+   parent scope as unreconstructable.
 3. Map every atom to child outcomes, explicit deferrals, out-of-scope decisions,
    maintainer decisions, or missing information.
 4. Classify each child result:
@@ -147,6 +151,7 @@ The method should rebuild a parent coverage ledger:
    - `needs-reporter-info`
    - `security-private-process`
    - `not-reconcilable`
+   - `needs-child-readback`
 
 Closing is allowed only when every parent atom is covered, explicitly deferred
 with an accepted follow-up, out of scope with evidence, or resolved by a
@@ -208,6 +213,10 @@ Mutation Preview:
 - No GitHub mutation was performed.
 ```
 
+Use `not-reconcilable` only when parent scope cannot be reconstructed. Use
+`needs-child-readback` when parent scope is reconstructable but child states
+cannot be audited without actual child issue links or readback data.
+
 ### 5. GitHub Mutation Gate
 
 Use the same two-step mutation approval contract as `decomposing-issues` and
@@ -229,6 +238,8 @@ Non-close outcomes also need a handoff. When disposition is not
 - `security-private-process` -> repository security policy / `SECURITY.md`
 - `not-reconcilable` -> `superpowers:triaging-issues` for fresh intake or
   explicit human-provided mapping
+- `needs-child-readback` -> `None` unless child issues were never created; then
+  use `superpowers:decomposing-issues`
 
 If no next skill applies, write `None` and explain why.
 

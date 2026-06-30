@@ -108,7 +108,8 @@ Classify each child result:
 - unclear outcome
 
 If the parent tracking comment contains only child drafts and no actual child
-issue links, block or request link/readback data before auditing child states.
+issue links, output blocked status `needs-child-readback` or request
+link/readback data before auditing child states.
 
 ### Build the coverage ledger
 
@@ -134,6 +135,7 @@ Use one status:
 - `needs-reporter-info`
 - `security-private-process`
 - `not-reconcilable`
+- `needs-child-readback`
 
 Closing is allowed only when every parent atom is covered, explicitly deferred
 with an accepted follow-up, out of scope with evidence, or resolved by a
@@ -147,6 +149,7 @@ For non-close dispositions, include `Recommended Next Superpowers Skill`:
 - `needs-reporter-info -> superpowers:triaging-issues`
 - `security-private-process -> repository security policy / SECURITY.md`
 - `not-reconcilable -> superpowers:triaging-issues`
+- `needs-child-readback -> None` unless child issues were never created; then use `superpowers:decomposing-issues`
 
 Use `None` for `keep-open` unless repository policy or the parent disposition
 names a specific non-Superpowers follow-up process. `keep-open` means the
@@ -197,7 +200,9 @@ Parent:
 - Issue:
 
 Why blocked:
-- Parent scope cannot be reconstructed from the available parent evidence.
+- Parent scope cannot be reconstructed from the available parent evidence, or
+  child outcome audit cannot run because actual child issue links or readback
+  data are missing.
 
 Needed Input:
 - Parent issue evidence
@@ -207,9 +212,11 @@ Needed Input:
 - any child coverage mapping that can be checked against the parent scope inventory
 
 Parent Disposition:
-- Status: not-reconcilable
+- Status: not-reconcilable or needs-child-readback
 - not-reconcilable is used only when parent scope cannot be reconstructed.
-- Recommended Next Superpowers Skill: superpowers:triaging-issues
+- needs-child-readback is used when parent scope is reconstructable but child
+  states cannot be audited without actual child issue links or readback data.
+- Recommended Next Superpowers Skill:
 
 Mutation Preview:
 - No GitHub mutation was performed.

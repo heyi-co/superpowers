@@ -156,12 +156,18 @@ After completing work for a child issue, if the child issue has `Parent: #<id>`,
 `Covers scope atoms`, or another clear parent/coverage reference, mention that
 the parent may need `superpowers:reconciling-issues`.
 
+If the human explicitly asks to reconcile, close, check, or finish the parent,
+stop parent handling in this skill and route that parent request to
+`superpowers:reconciling-issues`. That is an explicit handoff, not automatic
+reconciliation.
+
 This is advisory only:
 
 - Do not close the parent.
 - Do not post a parent comment.
 - Do not edit parent labels or state.
-- Do not block finishing the child PR unless the human asks to reconcile.
+- Do not block finishing the child PR unless the human asks to reconcile, close,
+  check, or finish the parent.
 - Do not run reconciliation automatically.
 
 ## Red Flags

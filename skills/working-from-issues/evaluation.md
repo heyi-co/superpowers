@@ -74,5 +74,6 @@ successfully.
 Expected after-change behavior:
 
 - child completion with `Parent: #1200` or `Covers scope atoms` produces an advisory mention of `superpowers:reconciling-issues`
+- explicit parent reconcile/close/check requests route to `superpowers:reconciling-issues`
 - the skill does not run reconciliation automatically
 - the skill does not close parent issues

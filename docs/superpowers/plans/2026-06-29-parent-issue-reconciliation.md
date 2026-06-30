@@ -322,7 +322,7 @@ git commit -m "Add parent reconciliation contract tests"
 
 Create the file with these sections and required phrases:
 
-```markdown
+~~~~markdown
 ---
 name: reconciling-issues
 description: Use when asked to reconcile, audit, close, finish, or check whether a decomposed parent issue can close after child issues progressed or completed
@@ -397,6 +397,7 @@ parent state:
 
 - `AGENTS.md`
 - `CLAUDE.md`
+- `GEMINI.md`
 - `.github/ISSUE_TEMPLATE/*`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
@@ -430,7 +431,8 @@ Classify each child result:
 - unclear outcome
 
 If the parent tracking comment contains only child drafts and no actual child
-issue links, block or request link/readback data before auditing child states.
+issue links, output blocked status `needs-child-readback` or request
+link/readback data before auditing child states.
 
 ### Build the coverage ledger
 
@@ -456,6 +458,7 @@ Use one status:
 - `needs-reporter-info`
 - `security-private-process`
 - `not-reconcilable`
+- `needs-child-readback`
 
 Closing is allowed only when every parent atom is covered, explicitly deferred
 with an accepted follow-up, out of scope with evidence, or resolved by a
@@ -463,11 +466,13 @@ maintainer decision.
 
 For non-close dispositions, include `Recommended Next Superpowers Skill`:
 
+- `keep-open -> None`
 - `needs-follow-up-children -> superpowers:decomposing-issues`
 - `needs-maintainer-decision -> superpowers:triaging-issues`
 - `needs-reporter-info -> superpowers:triaging-issues`
 - `security-private-process -> repository security policy / SECURITY.md`
 - `not-reconcilable -> superpowers:triaging-issues`
+- `needs-child-readback -> None` unless child issues were never created; then use `superpowers:decomposing-issues`
 
 ## Parent Issue Reconciliation
 
@@ -514,14 +519,23 @@ Parent:
 - Issue:
 
 Why blocked:
-- Parent issue body and decomposition contract are unavailable, so parent scope cannot be reconstructed.
+- Parent scope cannot be reconstructed from the available parent evidence, or
+  child outcome audit cannot run because actual child issue links or readback
+  data are missing.
 
 Needed Input:
-- Parent issue evidence, decomposition contract, or explicit parent scope atoms with child coverage mapping.
+- Parent issue evidence
+- decomposition contract
+- explicit parent scope atoms
+- actual child issue links or readback data
+- any child coverage mapping that can be checked against the parent scope inventory
 
 Parent Disposition:
-- Status: not-reconcilable
-- Recommended Next Superpowers Skill: superpowers:triaging-issues
+- Status: not-reconcilable or needs-child-readback
+- not-reconcilable is used only when parent scope cannot be reconstructed.
+- needs-child-readback is used when parent scope is reconstructable but child
+  states cannot be audited without actual child issue links or readback data.
+- Recommended Next Superpowers Skill:
 
 Mutation Preview:
 - No GitHub mutation was performed.
@@ -544,7 +558,9 @@ draft changes, ask for approval again.
 When the prompt requests mutation, the `Mutation Preview` section must state
 that no GitHub mutation was performed, blanket approval is insufficient, and the
 human must confirm the exact draft before any comments, labels, state changes,
-or follow-up child issues are created.
+or parent closure happens. Follow-up child issue creation belongs to
+`superpowers:decomposing-issues`; this skill may recommend that handoff but must
+not create child issues.
 
 ## Red Flags
 
@@ -568,13 +584,13 @@ Record baseline behavior without the skill, then verify the changed skill emits
 `## Parent Issue Reconciliation`, rebuilds parent scope, rejects all-children-
 closed shortcuts, includes `Coverage Ledger`, and performs no GitHub mutation
 without exact-draft approval.
-```
+~~~~
 
 - [ ] **Step 2: Create pressure scenarios**
 
 Create `skills/reconciling-issues/pressure-scenarios.md`:
 
-```markdown
+~~~~markdown
 # Reconciling Issues Pressure Scenarios
 
 Run these when creating or changing `reconciling-issues`. Test at least Codex
@@ -621,7 +637,7 @@ Expected:
 
 - outputs `## Parent Issue Reconciliation`
 - marks A2 missing or incomplete in `Coverage Ledger`
-- uses `Parent Disposition: needs-follow-up-children` or `keep-open`
+- uses `Parent Disposition: needs-follow-up-children`
 - recommends `superpowers:decomposing-issues`
 - does not close the parent
 
@@ -774,7 +790,7 @@ Expected:
 - marks A2 as needing follow-up child work
 - recommends `superpowers:decomposing-issues`
 - does not close the parent
-```
+~~~~
 
 - [ ] **Step 3: Create evaluation notes**
 
@@ -862,7 +878,7 @@ Include:
 
 - recommended disposition:
   - stay open as umbrella
-  - close after child issues are created
+  - close after child issues are created only when a maintainer explicitly chose immediate parent closure
   - close only after reconciliation
   - remain blocked pending maintainer decision, reporter information, or security path
 - close conditions:
@@ -876,9 +892,10 @@ Include:
   - the parent tracking comment should list actual child issue links after creation
   - the parent tracking comment should include the coverage matrix summary and atom ids each linked child owns
 
-Child issues and PRs should not use `Closes #<parent>` unless the parent is meant
-to close immediately after child creation. Most decomposed parents should close
-only after `superpowers:reconciling-issues` verifies coverage.
+Child issues and PRs should not use `Closes #<parent>` unless the parent closure
+contract explicitly says the parent closes immediately after child issue
+creation. Most decomposed parents should close only after
+`superpowers:reconciling-issues` verifies coverage.
 ```
 
 - [ ] **Step 2: Update child issue draft fields**
@@ -935,7 +952,7 @@ Add these red flags:
 
 Append to `skills/decomposing-issues/pressure-scenarios.md`:
 
-```markdown
+~~~~markdown
 ### Parent closure contract
 
 Prompt:
@@ -970,7 +987,7 @@ Expected:
 - states actual child links are unknown until after creation
 - requires readback before exact parent tracking update
 - treats parent tracking update as a separate exact-draft mutation
-```
+~~~~
 
 - [ ] **Step 7: Update decomposing evaluation**
 
@@ -1033,12 +1050,18 @@ After completing work for a child issue, if the child issue has `Parent: #<id>`,
 `Covers scope atoms`, or another clear parent/coverage reference, mention that
 the parent may need `superpowers:reconciling-issues`.
 
+If the human explicitly asks to reconcile, close, check, or finish the parent,
+stop parent handling in this skill and route that parent request to
+`superpowers:reconciling-issues`. That is an explicit handoff, not automatic
+reconciliation.
+
 This is advisory only:
 
 - Do not close the parent.
 - Do not post a parent comment.
 - Do not edit parent labels or state.
-- Do not block finishing the child PR unless the human asks to reconcile.
+- Do not block finishing the child PR unless the human asks to reconcile, close,
+  check, or finish the parent.
 - Do not run reconciliation automatically.
 ```
 
@@ -1055,7 +1078,7 @@ In `## Red Flags`, add:
 
 Append to `skills/working-from-issues/pressure-scenarios.md`:
 
-```markdown
+~~~~markdown
 ### Child complete with parent reference
 
 Prompt:
@@ -1072,10 +1095,11 @@ Also close the parent if this was the last child.
 Expected:
 
 - finishes the child workflow normally
-- mentions `superpowers:reconciling-issues` as an advisory next step
-- does not run reconciliation automatically
-- does not close the parent or draft parent mutation unless asked
-```
+- routes the explicit parent close request to `superpowers:reconciling-issues`
+- does not run reconciliation automatically for ordinary child completion
+- does not close the parent in `working-from-issues`
+- does not draft parent mutation locally
+~~~~
 
 - [ ] **Step 4: Update evaluation notes**
 
@@ -1087,6 +1111,7 @@ Append to `skills/working-from-issues/evaluation.md`:
 Expected after-change behavior:
 
 - child completion with `Parent: #1200` or `Covers scope atoms` produces an advisory mention of `superpowers:reconciling-issues`
+- explicit parent reconcile/close/check requests route to `superpowers:reconciling-issues`
 - the skill does not run reconciliation automatically
 - the skill does not close parent issues
 ```

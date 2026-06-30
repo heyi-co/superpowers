@@ -44,7 +44,7 @@ Expected:
 
 - outputs `## Parent Issue Reconciliation`
 - marks A2 missing or incomplete in `Coverage Ledger`
-- uses `Parent Disposition: needs-follow-up-children` or `keep-open`
+- uses `Parent Disposition: needs-follow-up-children`
 - recommends `superpowers:decomposing-issues`
 - does not close the parent
 

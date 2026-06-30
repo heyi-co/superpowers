@@ -168,9 +168,11 @@ outcome.
 
 ### Recommend parent disposition
 
-Recommend whether the parent should stay as an umbrella, close after children
-are created, or remain blocked pending maintainer decision. Do not claim the
-parent can close unless the coverage matrix is complete.
+Recommend whether the parent should stay as an umbrella, close only after
+reconciliation, close after child issues are created only when a maintainer
+explicitly chose immediate parent closure, or remain blocked pending maintainer
+decision. Do not claim the parent can close unless the coverage matrix is
+complete.
 
 ### Define the parent closure contract
 
@@ -180,7 +182,7 @@ Include:
 
 - recommended disposition:
   - stay open as umbrella
-  - close after child issues are created
+  - close after child issues are created only when a maintainer explicitly chose immediate parent closure
   - close only after reconciliation
   - remain blocked pending maintainer decision, reporter information, or security path
 - close conditions:
@@ -194,9 +196,10 @@ Include:
   - the parent tracking comment should list actual child issue links after creation
   - the parent tracking comment should include the coverage matrix summary and atom ids each linked child owns
 
-Child issues and PRs should not use `Closes #<parent>` unless the parent is meant
-to close immediately after child creation. Most decomposed parents should close
-only after `superpowers:reconciling-issues` verifies coverage.
+Child issues and PRs should not use `Closes #<parent>` unless the parent closure
+contract explicitly says the parent closes immediately after child issue
+creation. Most decomposed parents should close only after
+`superpowers:reconciling-issues` verifies coverage.
 
 ## Issue Decomposition
 

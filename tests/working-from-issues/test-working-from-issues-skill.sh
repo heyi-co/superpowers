@@ -130,6 +130,7 @@ assert_contains "$SKILL" "superpowers:decomposing-issues" "decomposition handoff
 assert_contains "$SKILL" "## Parent Reconciliation Advisory" "skill defines parent reconciliation advisory"
 assert_contains "$SKILL" "superpowers:reconciling-issues" "skill advises reconciling issues"
 assert_contains "$SKILL" "should not run reconciliation automatically" "skill avoids automatic reconciliation"
+assert_contains "$SKILL" "asks to reconcile, close, check, or finish the parent" "explicit parent closure requests route to reconciliation"
 assert_contains "$SKILL" "Do not close the parent" "skill avoids parent closure"
 assert_not_contains "$SKILL" "## Proposed Split" "skill no longer defines legacy split proposal"
 assert_not_contains "$SKILL" "When scope needs to split, draft child issues" "skill no longer drafts child issues inline"

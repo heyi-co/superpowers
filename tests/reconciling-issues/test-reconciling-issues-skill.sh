@@ -10,6 +10,7 @@ DECOMPOSING="$REPO_ROOT/skills/decomposing-issues/SKILL.md"
 WORKING="$REPO_ROOT/skills/working-from-issues/SKILL.md"
 README="$REPO_ROOT/README.md"
 SPEC="$REPO_ROOT/docs/superpowers/specs/2026-06-29-parent-issue-reconciliation-design.md"
+PLAN="$REPO_ROOT/docs/superpowers/plans/2026-06-29-parent-issue-reconciliation.md"
 
 FAILURES=0
 
@@ -135,6 +136,7 @@ assert_contains "$SKILL" "needs-maintainer-decision -> superpowers:triaging-issu
 assert_contains "$SKILL" "needs-reporter-info -> superpowers:triaging-issues" "reporter info routes to triage"
 assert_contains "$SKILL" "not-reconcilable -> superpowers:triaging-issues" "not reconcilable routes to triage"
 assert_contains "$SKILL" "not-reconcilable is used only when parent scope cannot be reconstructed" "not reconcilable is scoped to unreconstructable parent scope"
+assert_contains "$SKILL" "needs-child-readback" "blocked output distinguishes missing child readback from unreconstructable parent scope"
 assert_contains "$SKILL" "actual child issue links or readback data" "blocked guidance calls for actual child links or readback data"
 
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
@@ -151,6 +153,8 @@ assert_contains "$SCENARIOS" "Parent tracking lacks child links" "scenario cover
 assert_contains "$SCENARIOS" "Security-sensitive parent" "scenario covers security"
 assert_contains "$SCENARIOS" "Repository policy keeps umbrella open" "scenario covers repository policy"
 assert_contains "$SCENARIOS" "Follow-up child needed" "scenario covers non-close next skill"
+assert_contains "$SCENARIOS" "uses \`Parent Disposition: needs-follow-up-children\`" "partial coverage scenario routes missing atoms to follow-up children"
+assert_not_contains "$SCENARIOS" "needs-follow-up-children\` or \`keep-open" "partial coverage scenario does not allow keep-open without follow-up routing"
 
 assert_file_exists "$EVALUATION" "evaluation summary file exists"
 assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
@@ -164,6 +168,7 @@ assert_contains "$WORKING" "should not run reconciliation automatically" "workin
 assert_contains "$README" "**reconciling-issues**" "README lists reconciling-issues skill"
 assert_contains "$SPEC" "Parent Closure Contract" "design spec covers closure contract"
 assert_contains "$SPEC" "must not replace the parent scope inventory" "design spec covers mapping limit"
+assert_contains "$PLAN" "~~~~markdown" "plan uses tilde fences for nested markdown snippets"
 
 assert_not_contains "$SKILL" "automatically close" "skill does not promise automatic closure"
 

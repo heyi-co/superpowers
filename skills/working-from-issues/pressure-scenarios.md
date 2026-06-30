@@ -241,6 +241,7 @@ Also close the parent if this was the last child.
 Expected:
 
 - finishes the child workflow normally
-- mentions `superpowers:reconciling-issues` as an advisory next step
-- does not run reconciliation automatically
-- does not close the parent or draft parent mutation unless asked
+- routes the explicit parent close request to `superpowers:reconciling-issues`
+- does not run reconciliation automatically for ordinary child completion
+- does not close the parent in `working-from-issues`
+- does not draft parent mutation locally
