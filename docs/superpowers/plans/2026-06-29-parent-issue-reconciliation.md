@@ -462,10 +462,13 @@ Use one status:
 
 Closing is allowed only when every parent atom is covered, explicitly deferred
 with an accepted follow-up, out of scope with evidence, or resolved by a
-maintainer decision.
+maintainer decision when the atom itself is a decision/disposition atom. A
+maintainer decision that merely unblocks implementation does not close the atom;
+mark it as `needs-follow-up-children`.
 
-For non-close dispositions, include `Recommended Next Superpowers Skill`:
+For the `Recommended Next Superpowers Skill` field, use:
 
+- `ready-to-close -> None`
 - `keep-open -> None`
 - `needs-follow-up-children -> superpowers:decomposing-issues`
 - `needs-maintainer-decision -> superpowers:triaging-issues`

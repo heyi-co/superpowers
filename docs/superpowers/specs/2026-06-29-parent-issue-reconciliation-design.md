@@ -155,7 +155,9 @@ The method should rebuild a parent coverage ledger:
 
 Closing is allowed only when every parent atom is covered, explicitly deferred
 with an accepted follow-up, out of scope with evidence, or resolved by a
-maintainer decision. Closed child issues alone are not enough.
+maintainer decision when the atom itself is a decision/disposition atom. A
+maintainer decision that merely unblocks implementation does not close the atom;
+mark it as `needs-follow-up-children`. Closed child issues alone are not enough.
 
 ### 4. Output Contract
 
@@ -228,9 +230,9 @@ Use the same two-step mutation approval contract as `decomposing-issues` and
 Blanket approval such as "close it if done" is not enough. If the close comment
 or disposition changes, ask again.
 
-Non-close outcomes also need a handoff. When disposition is not
-`ready-to-close`, the output should name the next likely skill:
+Every disposition should fill `Recommended Next Superpowers Skill`:
 
+- `ready-to-close` -> `None`
 - `needs-follow-up-children` -> `superpowers:decomposing-issues`
 - `needs-maintainer-decision` -> `superpowers:triaging-issues` or the
   repository's maintainer decision process

@@ -119,6 +119,8 @@ assert_contains "$SKILL" "spike answered, follow-up needed" "method classifies s
 assert_contains "$SKILL" "ready-to-close" "method includes ready-to-close disposition"
 assert_contains "$SKILL" "needs-follow-up-children" "method includes follow-up child disposition"
 assert_contains "$SKILL" "security-private-process" "method includes security disposition"
+assert_contains "$SKILL" "decision/disposition atom" "maintainer decisions only close decision atoms"
+assert_contains "$SKILL" "merely unblocks implementation" "implementation-unblocking decisions route to follow-up children"
 
 assert_contains "$SKILL" "## Parent Issue Reconciliation" "skill defines output contract"
 assert_contains "$SKILL" "Parent scope source:" "output records parent scope source"
@@ -130,6 +132,7 @@ assert_contains "$SKILL" "Mutation Preview:" "output includes mutation preview"
 assert_contains "$SKILL" "Exact parent comment draft:" "output drafts exact parent comment"
 
 assert_contains "$SKILL" "keep-open -> None" "keep-open disposition stays open without forced follow-up"
+assert_contains "$SKILL" "ready-to-close -> None" "ready-to-close has no next skill handoff"
 assert_not_contains "$SKILL" "keep-open -> superpowers:decomposing-issues" "keep-open does not hard-route to decomposing"
 assert_contains "$SKILL" "needs-follow-up-children -> superpowers:decomposing-issues" "follow-up children route to decomposing"
 assert_contains "$SKILL" "needs-maintainer-decision -> superpowers:triaging-issues" "maintainer decision routes to triage"
@@ -168,6 +171,7 @@ assert_contains "$WORKING" "should not run reconciliation automatically" "workin
 assert_contains "$README" "**reconciling-issues**" "README lists reconciling-issues skill"
 assert_contains "$SPEC" "Parent Closure Contract" "design spec covers closure contract"
 assert_contains "$SPEC" "must not replace the parent scope inventory" "design spec covers mapping limit"
+assert_contains "$SPEC" "decision/disposition atom" "design spec scopes maintainer decisions to decision atoms"
 assert_contains "$PLAN" "~~~~markdown" "plan uses tilde fences for nested markdown snippets"
 
 assert_not_contains "$SKILL" "automatically close" "skill does not promise automatic closure"
