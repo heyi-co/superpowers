@@ -91,6 +91,7 @@ assert_contains "$SKILL" "Issue Decomposition" "skill consumes issue decompositi
 assert_contains "$SKILL" "human-provided mapping" "skill accepts human-provided mapping with limits"
 assert_contains "$SKILL" "parent issue evidence" "skill requires parent evidence for mappings"
 assert_contains "$SKILL" "must not replace the parent scope inventory" "mapping cannot replace parent scope"
+assert_contains "$SKILL" "GEMINI.md" "skill loads GEMINI instructions"
 assert_contains "$SKILL" "Parent Issue Reconciliation Blocked" "skill has blocked output"
 assert_contains "$SKILL" "not-reconcilable" "skill blocks when scope cannot be proven"
 
@@ -126,10 +127,14 @@ assert_contains "$SKILL" "Recommended Next Superpowers Skill:" "output includes 
 assert_contains "$SKILL" "Mutation Preview:" "output includes mutation preview"
 assert_contains "$SKILL" "Exact parent comment draft:" "output drafts exact parent comment"
 
+assert_contains "$SKILL" "keep-open -> None" "keep-open disposition stays open without forced follow-up"
+assert_not_contains "$SKILL" "keep-open -> superpowers:decomposing-issues" "keep-open does not hard-route to decomposing"
 assert_contains "$SKILL" "needs-follow-up-children -> superpowers:decomposing-issues" "follow-up children route to decomposing"
 assert_contains "$SKILL" "needs-maintainer-decision -> superpowers:triaging-issues" "maintainer decision routes to triage"
 assert_contains "$SKILL" "needs-reporter-info -> superpowers:triaging-issues" "reporter info routes to triage"
 assert_contains "$SKILL" "not-reconcilable -> superpowers:triaging-issues" "not reconcilable routes to triage"
+assert_contains "$SKILL" "not-reconcilable is used only when parent scope cannot be reconstructed" "not reconcilable is scoped to unreconstructable parent scope"
+assert_contains "$SKILL" "actual child issue links or readback data" "blocked guidance calls for actual child links or readback data"
 
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 assert_contains "$SKILL" "Closing because every child issue is closed" "red flags all-closed shortcut"

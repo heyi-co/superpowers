@@ -76,6 +76,7 @@ parent state:
 
 - `AGENTS.md`
 - `CLAUDE.md`
+- `GEMINI.md`
 - `.github/ISSUE_TEMPLATE/*`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
@@ -140,12 +141,16 @@ maintainer decision.
 
 For non-close dispositions, include `Recommended Next Superpowers Skill`:
 
-- `keep-open -> superpowers:decomposing-issues`
+- `keep-open -> None`
 - `needs-follow-up-children -> superpowers:decomposing-issues`
 - `needs-maintainer-decision -> superpowers:triaging-issues`
 - `needs-reporter-info -> superpowers:triaging-issues`
 - `security-private-process -> repository security policy / SECURITY.md`
 - `not-reconcilable -> superpowers:triaging-issues`
+
+Use `None` for `keep-open` unless repository policy or the parent disposition
+names a specific non-Superpowers follow-up process. `keep-open` means the
+parent remains open without forced follow-up child work.
 
 ## Parent Issue Reconciliation
 
@@ -192,13 +197,18 @@ Parent:
 - Issue:
 
 Why blocked:
-- Parent issue body and decomposition contract are unavailable, so parent scope cannot be reconstructed.
+- Parent scope cannot be reconstructed from the available parent evidence.
 
 Needed Input:
-- Parent issue evidence, decomposition contract, or explicit parent scope atoms with child coverage mapping.
+- Parent issue evidence
+- decomposition contract
+- explicit parent scope atoms
+- actual child issue links or readback data
+- any child coverage mapping that can be checked against the parent scope inventory
 
 Parent Disposition:
 - Status: not-reconcilable
+- not-reconcilable is used only when parent scope cannot be reconstructed.
 - Recommended Next Superpowers Skill: superpowers:triaging-issues
 
 Mutation Preview:
