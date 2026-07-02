@@ -1083,7 +1083,7 @@ Verify each line, quoting the evidence:
 - Each of the four issue skills has ≥2 RED scenarios × 2 harnesses with committed transcripts (`ls docs/heyi-sp/evidence/*/` shows 4 files per issue skill).
 - `skills/code-review/` has `evaluation.md` + `pressure-scenarios.md` with control, before, and after runs (9 transcripts in `docs/heyi-sp/evidence/code-review/`).
 - `grep -rn "Expected failure mode recorded" skills/` returns nothing.
-- `git diff --check main...HEAD` is clean.
+- `git diff --check main...HEAD -- ':(exclude)docs/heyi-sp/evidence' ':(exclude)skills/code-review/pressure-scenarios.md' ':(exclude)docs/heyi-sp/plans/2026-07-02-skill-evidence-and-style.md'` is clean. (The excluded files legitimately embed unified-diff fixtures whose blank context lines are a mandatory single space; `git diff --check` misreads them as trailing whitespace.)
 
 - [ ] **Step 3: Commit any verification fixes; otherwise no commit**
 
