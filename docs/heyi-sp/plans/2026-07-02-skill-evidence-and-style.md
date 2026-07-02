@@ -16,7 +16,7 @@
 - Exact annotation string for pre-existing rows (tests grep for it): `paraphrased record, predates transcript policy`.
 - Every new evaluation row records the run date, harness name and exact version (from `claude --version` / `codex --version` at run time), scenario, observed outcome, and a repo-relative transcript link.
 - Every RED row quotes at least one verbatim line from the transcript (the agent's rationalization or key output).
-- Sessions always run in a scratch git workspace created by the runner, never inside this repository. Never pass `--dangerously-skip-permissions`, `--full-auto`, or any sandbox/approval bypass flag: Claude headless denies unapproved tool mutations by default and the Codex default sandbox has no network. Scenario prompts are used verbatim from `pressure-scenarios.md` (they embed their own dry-run guards). No session may mutate GitHub.
+- Sessions always run in a scratch git workspace created by the runner, never inside this repository. Never pass `--dangerously-skip-permissions`, `--full-auto`, or any sandbox/approval bypass flag: Claude headless denies unapproved tool mutations by default and the Codex default sandbox has no network. Scenario prompts are used verbatim from `pressure-scenarios.md` (they embed their own dry-run guards). No session may mutate GitHub. Codex sessions additionally run with a read-only command sandbox (`-s read-only`) and account/MCP connectors disabled (`--disable apps`) so they cannot reach external mutating tools such as the GitHub connector.
 - Honesty rule (from the spec): if a RED baseline does not exhibit the predicted failure, record that plainly. Never adjust or discard a result.
 - `review-protocol.md` body must be byte-identical to the protocol previously embedded in `SKILL.md` (diff-verified in Task 8); the sha256 pin then guards later drift.
 - If a runner invocation fails (auth, onboarding, network), fix the environment and rerun; never hand-write a transcript. Transcripts are only ever produced by `scripts/run-skill-evidence.sh`.
@@ -203,7 +203,11 @@ run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
           < "$prompt_file" ) >> "$transcript" 2>&1 || rc=$?
     fi
   else
-    ( cd "$ws" && CODEX_HOME="$cfg" codex exec - < "$prompt_file" ) \
+    # Harden the session: run model-generated shell commands in a read-only
+    # sandbox (-s read-only) and disable account/MCP connectors (--disable apps,
+    # the current name for the connectors feature) so the session cannot reach
+    # external mutating tools such as the GitHub connector.
+    ( cd "$ws" && CODEX_HOME="$cfg" codex exec -s read-only --disable apps - < "$prompt_file" ) \
       >> "$transcript" 2>&1 || rc=$?
   fi
   {

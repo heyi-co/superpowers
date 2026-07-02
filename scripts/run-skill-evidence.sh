@@ -157,7 +157,11 @@ run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
           < "$prompt_file" ) >> "$transcript" 2>&1 || rc=$?
     fi
   else
-    ( cd "$ws" && CODEX_HOME="$cfg" codex exec - < "$prompt_file" ) \
+    # Harden the session: run model-generated shell commands in a read-only
+    # sandbox (-s read-only) and disable account/MCP connectors (--disable apps,
+    # the current name for the connectors feature) so the session cannot reach
+    # external mutating tools such as the GitHub connector.
+    ( cd "$ws" && CODEX_HOME="$cfg" codex exec -s read-only --disable apps - < "$prompt_file" ) \
       >> "$transcript" 2>&1 || rc=$?
   fi
   {
