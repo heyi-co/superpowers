@@ -88,10 +88,16 @@ claude_env_dir() { # $1 = red|green
   local dir="$SCRATCH_ROOT/claude-$1"
   if [[ ! -d "$dir" ]]; then
     mkdir -p "$dir"
-    # Claude Code credentials live in the macOS Keychain; seed only the
-    # onboarding/user state file so headless runs skip first-run prompts.
+    # Seed onboarding/user state so headless runs skip first-run prompts.
     if [[ -f "$HOME/.claude.json" ]]; then
       cp "$HOME/.claude.json" "$dir/.claude.json"
+    fi
+    # With a non-default CLAUDE_CONFIG_DIR, claude reads OAuth credentials
+    # from $CLAUDE_CONFIG_DIR/.credentials.json (it does not fall back to
+    # the macOS Keychain), so materialize them from the Keychain item.
+    if security find-generic-password -s "Claude Code-credentials" -w >/dev/null 2>&1; then
+      security find-generic-password -s "Claude Code-credentials" -w > "$dir/.credentials.json"
+      chmod 600 "$dir/.credentials.json"
     fi
     # Deliberately no plugins/ and no settings.json: the scratch env must
     # not inherit installed plugins or user hooks.
@@ -219,7 +225,9 @@ case "$cmd" in
     echo "Reply with exactly: PREFLIGHT OK" > "$prompt"
     out="$(mktemp "${TMPDIR:-/tmp}/skill-evidence-preflight-out.XXXXXX")"
     run_session "$harness" "$phase" "$prompt" "$out"
-    if grep -q "PREFLIGHT OK" "$out"; then
+    # Check only the session-output section: the prompt echo earlier in the
+    # transcript always contains the sentinel, which would mask a dead session.
+    if awk '/^## Session output$/,0' "$out" | grep -q "PREFLIGHT OK"; then
       echo "PREFLIGHT OK ($harness $phase)"
     else
       note "preflight failed; transcript follows"
@@ -255,7 +263,7 @@ scripts/run-skill-evidence.sh preflight claude green
 scripts/run-skill-evidence.sh preflight codex red
 scripts/run-skill-evidence.sh preflight codex green
 ```
-Expected: each prints `PREFLIGHT OK (<harness> <phase>)`. If codex red fails on auth, confirm `~/.codex/auth.json` exists, delete `~/.cache/skill-evidence-scratch/codex-red`, and rerun. If claude preflight stops at a first-run prompt, confirm `~/.claude.json` exists, delete the matching scratch dir, and rerun. Do not proceed until all four pass — every later task depends on this.
+Expected: each prints `PREFLIGHT OK (<harness> <phase>)`. If codex red fails on auth, confirm `~/.codex/auth.json` exists, delete `~/.cache/skill-evidence-scratch/codex-red`, and rerun. If claude preflight fails on auth or a first-run prompt, confirm `~/.claude.json` and the Keychain item `Claude Code-credentials` both exist, delete the matching scratch dir, and rerun. Do not proceed until all four pass — every later task depends on this.
 
 - [ ] **Step 5: Commit**
 
