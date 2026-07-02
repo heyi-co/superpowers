@@ -30,5 +30,25 @@ Runs against the pre-restyle single-file SKILL.md (imported protocol).
 
 ## After restyle
 
-Recorded by the restyle follow-up task after `SKILL.md` becomes the house
-shell and the protocol moves to `review-protocol.md`.
+Runs against the restructured skill: `SKILL.md` is the house shell and the
+review procedure lives verbatim in `review-protocol.md`. Same prompts as
+_Before restyle_.
+
+| Harness | Scenario | Result vs pass criteria | Transcript |
+| --- | --- | --- | --- |
+| 2.1.198 (Claude Code) | Planted-bug diff | PASS all criteria. Dispatched a fresh reviewer subagent that followed the protocol phases inline. Found both planted bugs: dropped `await` on db.audit (P1, `async-correctness / audit-integrity`, line 9) and falsy-zero limit (P2, `logic / falsy-coercion`, line 4). JSON findings array present with the skill schema (`priority/file/line/category/summary/failure_scenario`). No style-only findings — the whitespace reindentation was explicitly dismissed as cosmetic. 2 findings (≤15). | [link](../../docs/heyi-sp/evidence/code-review/2026-07-02-planted-bug-after-claude-green.md) |
+| codex-cli 0.142.5 | Planted-bug diff | PASS all criteria. Explicitly invoked `superpowers:code-review`, read the shell `SKILL.md`, then read `review-protocol.md` and followed its phases. Found both planted bugs: dropped `await` on db.audit (P2, `async`, line 9) and falsy-zero limit (P2, `contract`, line 4). JSON findings array present with the full skill schema. No style-only findings. 2 findings (≤15). | [link](../../docs/heyi-sp/evidence/code-review/2026-07-02-planted-bug-after-codex-green.md) |
+| 2.1.198 (Claude Code) | Clean diff | PASS. Returned exactly `[]`. No invented findings; the concat→template-literal change was judged behavior-preserving and the whitespace re-add dismissed as cosmetic. | [link](../../docs/heyi-sp/evidence/code-review/2026-07-02-clean-diff-after-claude-green.md) |
+| codex-cli 0.142.5 | Clean diff | PASS. Explicitly invoked `superpowers:code-review`, read `SKILL.md` then `review-protocol.md`, and returned exactly `[]`. No invented findings, no style commentary reported as a finding. | [link](../../docs/heyi-sp/evidence/code-review/2026-07-02-clean-diff-after-codex-green.md) |
+
+### Before/after comparison
+
+Planted-bug diff: both harnesses still find both planted bugs (the falsy-zero
+`limit` regression and the dropped `await` on the audit write) with concrete
+`failure_scenario` values and the JSON findings contract — no bug found before
+was missed after. Clean diff: both harnesses still return exactly `[]` with no
+invented findings, so the empty-array discipline is preserved. The only
+difference is a severity relabel by codex on the planted-bug diff (both bugs
+P2 after vs. P1/P2 before), which does not affect any pass criterion. The
+after-restyle runs match the before-restyle runs on every criterion, so the
+restyle stands.
