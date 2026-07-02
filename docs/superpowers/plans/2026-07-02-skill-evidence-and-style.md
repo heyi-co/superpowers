@@ -193,22 +193,27 @@ run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
     echo '````text'
   } > "$transcript"
 
+  # Session output is redacted before it reaches the transcript: local
+  # home-directory paths become "~" so committed evidence does not carry
+  # operator paths. With pipefail, rc still reflects the session, not sed.
   local rc=0
   if [[ "$harness" == "claude" ]]; then
     if [[ "$phase" == "green" ]]; then
       ( cd "$ws" && CLAUDE_CONFIG_DIR="$cfg" claude -p --output-format text \
-          --plugin-dir "$REPO_ROOT" < "$prompt_file" ) >> "$transcript" 2>&1 || rc=$?
+          --plugin-dir "$REPO_ROOT" < "$prompt_file" ) 2>&1 \
+        | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
     else
       ( cd "$ws" && CLAUDE_CONFIG_DIR="$cfg" claude -p --output-format text \
-          < "$prompt_file" ) >> "$transcript" 2>&1 || rc=$?
+          < "$prompt_file" ) 2>&1 \
+        | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
     fi
   else
     # Harden the session: run model-generated shell commands in a read-only
     # sandbox (-s read-only) and disable account/MCP connectors (--disable apps,
     # the current name for the connectors feature) so the session cannot reach
     # external mutating tools such as the GitHub connector.
-    ( cd "$ws" && CODEX_HOME="$cfg" codex exec -s read-only --disable apps - < "$prompt_file" ) \
-      >> "$transcript" 2>&1 || rc=$?
+    ( cd "$ws" && CODEX_HOME="$cfg" codex exec -s read-only --disable apps - < "$prompt_file" ) 2>&1 \
+      | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
   fi
   {
     echo '````'
