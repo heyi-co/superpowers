@@ -157,8 +157,13 @@ assert_contains "$EVALUATION" "After change" "evaluation summary records after-c
 assert_contains "$EVALUATION" "Full pressure matrix" "evaluation summary records full pressure matrix"
 assert_contains "$EVALUATION" "Post-review targeted regression" "evaluation summary records post-review regression"
 assert_contains "$EVALUATION" "two-step approval" "evaluation summary records two-step approval regression"
-assert_contains "$EVALUATION" "Codex CLI 0.142.3" "evaluation summary records Codex version"
-assert_contains "$EVALUATION" "Claude Code 2.1.185" "evaluation summary records Claude version"
+assert_contains "$EVALUATION" "docs/superpowers/evidence/working-from-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
+assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
+
+while IFS= read -r evidence_path; do
+  assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 
 assert_contains "$README" "**working-from-issues**" "README lists working-from-issues skill"
 

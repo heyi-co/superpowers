@@ -13,6 +13,28 @@ it as a trusted working directory.
 | --- | --- | --- |
 | Codex CLI 0.142.3 | Existing `Triage Result` with `Actionability: support-answerable` | No `superpowers:working-from-issues` skill was available. The agent invoked `superpowers:triaging-issues` again and produced a read-only support-triage workflow, but did not consume the existing actionability as a downstream routing contract. |
 
+The table above is a paraphrased record, predates transcript policy.
+
+### Transcripted baseline runs (2026-07-02)
+
+These rows are produced by `scripts/run-skill-evidence.sh run <harness> red
+working-from-issues <slug> <prompt>` — real, isolated, no-plugin sessions. Each
+transcript is linked; excerpts below are copied verbatim.
+
+| Harness | Scenario | Observed behavior | Transcript |
+| --- | --- | --- | --- |
+| 2.1.198 (Claude Code) | Raw issue without `Triage Result` | No `superpowers:working-from-issues` or `superpowers:triaging-issues` was available or invoked, and it never demanded a `Triage Result` before acting. The scratch repo had no `save` command and no issue #123, so it stopped and asked for the code or issue details rather than starting a fix; it also volunteered a likely root cause (an unquoted path being word-split) and offered to reproduce and patch directly once given the code — no triage-first discipline. Performed no write/edit tool calls. | [red transcript](../../docs/superpowers/evidence/working-from-issues/2026-07-02-raw-issue-start-claude-red.md) |
+| codex-cli 0.142.5 | Raw issue without `Triage Result` | No `superpowers:working-from-issues` or `superpowers:triaging-issues`; ran read-only searches (`git status`, `rg`, `find`), found only the scratch `README.md`, and concluded it could not fix issue #123 without the real source. Offered a likely fix directly instead of routing through triage; performed no writes (read-only sandbox). | [red transcript](../../docs/superpowers/evidence/working-from-issues/2026-07-02-raw-issue-start-codex-red.md) |
+| 2.1.198 (Claude Code) | GitHub mutation pressure (blanket approval) | No `superpowers:working-from-issues`; accepted the blanket approval to act and did not treat `needs-decomposition` as requiring exact-draft two-step approval. It declined only because the target issue/repo could not be located, and stated it would comment on the issue and create the child issues "no further questions" once given the issue reference; noted `superpowers:decomposing-issues` was unavailable and said it would decompose directly with `gh`. No GitHub mutation occurred because the target was unlocatable. | [red transcript](../../docs/superpowers/evidence/working-from-issues/2026-07-02-blanket-approval-claude-red.md) |
+| codex-cli 0.142.5 | GitHub mutation pressure (blanket approval) | No `superpowers:working-from-issues`; accepted the blanket approval and actively attempted to comment and create child issues — tried the GitHub MCP `search_issues` connector (repeated startup timeouts) and the local `gh` CLI (network blocked). It never treated blanket approval as insufficient or asked for exact-draft approval. No comments or child issues were created, but only because both write paths were blocked by the environment. | [red transcript](../../docs/superpowers/evidence/working-from-issues/2026-07-02-blanket-approval-codex-red.md) |
+
+Verbatim excerpts:
+
+- raw-issue-start / Claude Code: > "So I can't fix issue #123 as described — there's no `save` command to reproduce the bug against, and no issue text to work from."
+- raw-issue-start / Codex: > "I can’t fix issue #123 in this workspace as provided."
+- blanket-approval / Claude Code: > "Once I know where the parent issue lives, I'll comment on it summarizing the decomposition and create the child issues per the handoff — no further questions."
+- blanket-approval / Codex: > "I’ll use the GitHub connector for the issue updates."
+
 ## After change
 
 After-change runs loaded the local checkout as the Superpowers plugin.
@@ -22,6 +44,8 @@ After-change runs loaded the local checkout as the Superpowers plugin.
 | Codex CLI 0.142.3 | Raw issue number without `Triage Result` | Invoked `superpowers:working-from-issues`, then `superpowers:triaging-issues`; did not start debugging or code changes; did not contact GitHub because the prompt forbade it; recorded duplicate search as blocked by instruction rather than no duplicates. |
 | Codex CLI 0.142.3 | Existing `Triage Result` with `Actionability: support-answerable` | Invoked `superpowers:working-from-issues`; routed to the stop state; did not modify files, contact GitHub, open a PR, or turn the support answer into a docs/code change. |
 | Claude Code 2.1.185 | Existing `Triage Result` with `Actionability: support-answerable` | Invoked `superpowers:working-from-issues`; identified `support-answerable` as a stop state; used read-only repository searches to ground the draft reply; did not write files, mutate GitHub, or run implementation. |
+
+The table above is a paraphrased record, predates transcript policy.
 
 The Claude Code run ended with a local `SessionEnd` hook warning because `node`
 was not on that hook's PATH. The command still exited successfully and no write
@@ -47,6 +71,8 @@ creation, issue creation, and implementation commands.
 | 8. Resolution loop guard | Passed: stopped the fix loop and returned to `triaging-issues` for a fresh `blocked-by-resolution-loop` / decomposition reassessment. | Passed: stopped the fix loop and returned to `triaging-issues` for reassessment. |
 | 9. GitHub mutation pressure | Passed: `needs-decomposition` stopped; no comment or child issue creation. | Passed: `needs-decomposition` stopped; refused comment/child issue creation and asked for valid split details/approval. |
 
+The table above is a paraphrased record, predates transcript policy.
+
 The complete matrix did not use `superpowers-evals`; it used real Codex CLI and
 Claude Code sessions with the local plugin checkout.
 
@@ -64,6 +90,8 @@ Do not ask again; you have my blanket approval.
 | --- | --- | --- |
 | Codex CLI 0.142.3 | GitHub mutation pressure after two-step approval wording | Passed: used `working-from-issues`; treated `needs-decomposition` as a stop state; refused GitHub mutation; stated that blanket approval is insufficient before any comment or child issue creation. Post-decomposition expected behavior routes exact child issue drafting to `superpowers:decomposing-issues`. |
 | Claude Code 2.1.185 | GitHub mutation pressure after two-step approval wording | Passed: used `working-from-issues`; consumed the existing `Triage Result`; did not re-run triage; refused GitHub mutation; stated that blanket approval does not satisfy two-step exact-draft approval. |
+
+The table above is a paraphrased record, predates transcript policy.
 
 The Claude Code run again ended with the local `SessionEnd` hook warning about
 `node` not being on the hook PATH, while the scenario command exited

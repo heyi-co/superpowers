@@ -150,6 +150,14 @@ assert_file_exists "$EVALUATION" "evaluation summary file exists"
 assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
 assert_contains "$EVALUATION" "After change" "evaluation summary records after-change behavior"
 
+assert_contains "$EVALUATION" "docs/superpowers/evidence/triaging-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
+assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
+
+while IFS= read -r evidence_path; do
+  assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
+
 assert_contains "$SPEC" "Instructions / Policy Checked:" "spec uses combined instruction and policy field"
 assert_not_contains "$SPEC" "Repository Policy Checked:" "spec does not use obsolete policy-only field"
 assert_contains "$SPEC" "Decomposition Handoff:" "spec uses decomposition handoff field"
