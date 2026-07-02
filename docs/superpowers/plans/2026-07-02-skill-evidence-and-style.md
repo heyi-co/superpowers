@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Backfill real RED-baseline evidence (with committed transcripts) for the four issue-workflow skills, fix the evaluation-record integrity defects, and restructure `skills/code-review` into a house-style shell plus a verbatim protocol file — per `docs/heyi-sp/specs/2026-07-02-skill-evidence-and-style-design.md`.
+**Goal:** Backfill real RED-baseline evidence (with committed transcripts) for the four issue-workflow skills, fix the evaluation-record integrity defects, and restructure `skills/code-review` into a house-style shell plus a verbatim protocol file — per `docs/superpowers/specs/2026-07-02-skill-evidence-and-style-design.md`.
 
-**Architecture:** A committed runner script drives real, isolated CLI sessions: RED sessions use a scratch config directory with no plugin; GREEN sessions load the working-tree plugin (`claude --plugin-dir` / local Codex marketplace install with a whole-directory diff check). Transcripts land under `docs/heyi-sp/evidence/` and evaluation files link to them. The code-review restyle moves the imported protocol byte-identically into `review-protocol.md` behind a ~400-word house-style `SKILL.md` shell, bracketed by before/after application runs.
+**Architecture:** A committed runner script drives real, isolated CLI sessions: RED sessions use a scratch config directory with no plugin; GREEN sessions load the working-tree plugin (`claude --plugin-dir` / local Codex marketplace install with a whole-directory diff check). Transcripts land under `docs/superpowers/evidence/` and evaluation files link to them. The code-review restyle moves the imported protocol byte-identically into `review-protocol.md` behind a ~400-word house-style `SKILL.md` shell, bracketed by before/after application runs.
 
 **Tech Stack:** bash, git, `claude` CLI (2.1.198+), `codex` CLI (0.142.5+). No third-party dependencies.
 
@@ -12,7 +12,7 @@
 
 - Work on branch `skill-evidence-and-style`; one commit per task.
 - Task order: Task 1 first; Tasks 2–5 in any order after it; then 6 → 7 → 8 → 9 → 10 strictly in order (Task 7 must run BEFORE the Task 8 restyle; Task 9 after it).
-- Evidence transcripts: `docs/heyi-sp/evidence/<skill>/<YYYY-MM-DD>-<scenario-slug>-<harness>-<red|green>.md`. Evidence lives under `docs/`, never `skills/` (skills/ ships in the plugin package).
+- Evidence transcripts: `docs/superpowers/evidence/<skill>/<YYYY-MM-DD>-<scenario-slug>-<harness>-<red|green>.md`. Evidence lives under `docs/`, never `skills/` (skills/ ships in the plugin package).
 - Exact annotation string for pre-existing rows (tests grep for it): `paraphrased record, predates transcript policy`.
 - Every new evaluation row records the run date, harness name and exact version (from `claude --version` / `codex --version` at run time), scenario, observed outcome, and a repo-relative transcript link.
 - Every RED row quotes at least one verbatim line from the transcript (the agent's rationalization or key output).
@@ -50,11 +50,11 @@ set -euo pipefail
 # Skill-evidence session runner.
 #   RED   = scratch config, Superpowers absent   -> baseline evidence
 #   GREEN = scratch config, working-tree plugin  -> verification evidence
-# Design: docs/heyi-sp/specs/2026-07-02-skill-evidence-and-style-design.md
+# Design: docs/superpowers/specs/2026-07-02-skill-evidence-and-style-design.md
 # Transcripts are only ever produced by this script; never hand-write one.
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-EVIDENCE_ROOT="$REPO_ROOT/docs/heyi-sp/evidence"
+EVIDENCE_ROOT="$REPO_ROOT/docs/superpowers/evidence"
 SCRATCH_ROOT="${SKILL_EVIDENCE_SCRATCH:-$HOME/.cache/skill-evidence-scratch}"
 TODAY="$(date +%F)"
 
@@ -245,7 +245,7 @@ case "$cmd" in
     [[ -f "$prompt_file" ]] || { note "prompt file not found: $prompt_file"; exit 1; }
     transcript="$EVIDENCE_ROOT/$skill/$TODAY-$slug-$harness-$phase.md"
     run_session "$harness" "$phase" "$prompt_file" "$transcript"
-    echo "docs/heyi-sp/evidence/$skill/$TODAY-$slug-$harness-$phase.md"
+    echo "docs/superpowers/evidence/$skill/$TODAY-$slug-$harness-$phase.md"
     ;;
   *)
     usage
@@ -283,7 +283,7 @@ git commit -m "Add skill-evidence session runner"
 **Files:**
 - Modify: `skills/triaging-issues/evaluation.md`
 - Modify: `tests/triaging-issues/test-triaging-issues-skill.sh` (evaluation assertions region, currently lines 149–151)
-- Create: `docs/heyi-sp/evidence/triaging-issues/` (4 transcripts, via runner)
+- Create: `docs/superpowers/evidence/triaging-issues/` (4 transcripts, via runner)
 
 **Interfaces:**
 - Consumes: `scripts/run-skill-evidence.sh run ...` from Task 1.
@@ -296,13 +296,13 @@ In `tests/triaging-issues/test-triaging-issues-skill.sh`, directly after the exi
 add:
 
 ```bash
-assert_contains "$EVALUATION" "docs/heyi-sp/evidence/triaging-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "docs/superpowers/evidence/triaging-issues/" "evaluation links evidence transcripts"
 assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
 assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
 
 while IFS= read -r evidence_path; do
   assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
-done < <(grep -o 'docs/heyi-sp/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -322,7 +322,7 @@ scripts/run-skill-evidence.sh run codex  red triaging-issues security-report /tm
 scripts/run-skill-evidence.sh run claude red triaging-issues bundled-issue  /tmp/triaging-bundled-issue.md
 scripts/run-skill-evidence.sh run codex  red triaging-issues bundled-issue  /tmp/triaging-bundled-issue.md
 ```
-Expected: each prints a transcript path under `docs/heyi-sp/evidence/triaging-issues/`. Read each transcript fully before Step 5.
+Expected: each prints a transcript path under `docs/superpowers/evidence/triaging-issues/`. Read each transcript fully before Step 5.
 
 - [ ] **Step 5: Update evaluation.md**
 
@@ -337,9 +337,9 @@ The table above is a paraphrased record, predates transcript policy.
 
 | Harness | Scenario | Observed behavior | Transcript |
 | --- | --- | --- | --- |
-| <exact version from transcript> | Possible vulnerability report | <one-sentence observed outcome from the transcript> | [red transcript](../../docs/heyi-sp/evidence/triaging-issues/<file>.md) |
+| <exact version from transcript> | Possible vulnerability report | <one-sentence observed outcome from the transcript> | [red transcript](../../docs/superpowers/evidence/triaging-issues/<file>.md) |
 ```
-…one row per run (4 rows). Relative links from `skills/triaging-issues/` to the evidence files are `../../docs/heyi-sp/evidence/triaging-issues/<file>.md`.
+…one row per run (4 rows). Relative links from `skills/triaging-issues/` to the evidence files are `../../docs/superpowers/evidence/triaging-issues/<file>.md`.
 
 2. After the table, add a `Verbatim excerpts:` list with at least one exact quoted line per run:
 
@@ -361,7 +361,7 @@ Expected: `All ... tests passed` (or the suite's PASS line) with the new asserti
 - [ ] **Step 7: Commit**
 
 ```bash
-git add skills/triaging-issues/evaluation.md tests/triaging-issues/test-triaging-issues-skill.sh docs/heyi-sp/evidence/triaging-issues/
+git add skills/triaging-issues/evaluation.md tests/triaging-issues/test-triaging-issues-skill.sh docs/superpowers/evidence/triaging-issues/
 git commit -m "Backfill transcripted RED baselines for triaging-issues"
 ```
 
@@ -372,7 +372,7 @@ git commit -m "Backfill transcripted RED baselines for triaging-issues"
 **Files:**
 - Modify: `skills/working-from-issues/evaluation.md`
 - Modify: `tests/working-from-issues/test-working-from-issues-skill.sh` (evaluation assertions region, currently the block ending with the two version-literal asserts)
-- Create: `docs/heyi-sp/evidence/working-from-issues/` (4 transcripts, via runner)
+- Create: `docs/superpowers/evidence/working-from-issues/` (4 transcripts, via runner)
 
 **Interfaces:**
 - Consumes: `scripts/run-skill-evidence.sh run ...` from Task 1.
@@ -390,13 +390,13 @@ assert_contains "$EVALUATION" "Claude Code 2.1.185" "evaluation summary records 
 and in their place add:
 
 ```bash
-assert_contains "$EVALUATION" "docs/heyi-sp/evidence/working-from-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "docs/superpowers/evidence/working-from-issues/" "evaluation links evidence transcripts"
 assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
 assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
 
 while IFS= read -r evidence_path; do
   assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
-done < <(grep -o 'docs/heyi-sp/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -434,7 +434,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add skills/working-from-issues/evaluation.md tests/working-from-issues/test-working-from-issues-skill.sh docs/heyi-sp/evidence/working-from-issues/
+git add skills/working-from-issues/evaluation.md tests/working-from-issues/test-working-from-issues-skill.sh docs/superpowers/evidence/working-from-issues/
 git commit -m "Backfill transcripted RED baselines for working-from-issues"
 ```
 
@@ -445,7 +445,7 @@ git commit -m "Backfill transcripted RED baselines for working-from-issues"
 **Files:**
 - Modify: `skills/decomposing-issues/evaluation.md`
 - Modify: `tests/decomposing-issues/test-decomposing-issues-skill.sh` (evaluation assertions region, currently lines 139–141)
-- Create: `docs/heyi-sp/evidence/decomposing-issues/` (4 transcripts, via runner)
+- Create: `docs/superpowers/evidence/decomposing-issues/` (4 transcripts, via runner)
 
 **Interfaces:**
 - Consumes: `scripts/run-skill-evidence.sh run ...` from Task 1.
@@ -458,13 +458,13 @@ In `tests/decomposing-issues/test-decomposing-issues-skill.sh`, directly after
 add the same block as Task 2 Step 1 with the skill path changed:
 
 ```bash
-assert_contains "$EVALUATION" "docs/heyi-sp/evidence/decomposing-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "docs/superpowers/evidence/decomposing-issues/" "evaluation links evidence transcripts"
 assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
 assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
 
 while IFS= read -r evidence_path; do
   assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
-done < <(grep -o 'docs/heyi-sp/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -506,7 +506,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add skills/decomposing-issues/evaluation.md tests/decomposing-issues/test-decomposing-issues-skill.sh docs/heyi-sp/evidence/decomposing-issues/
+git add skills/decomposing-issues/evaluation.md tests/decomposing-issues/test-decomposing-issues-skill.sh docs/superpowers/evidence/decomposing-issues/
 git commit -m "Backfill transcripted RED baselines for decomposing-issues"
 ```
 
@@ -517,7 +517,7 @@ git commit -m "Backfill transcripted RED baselines for decomposing-issues"
 **Files:**
 - Modify: `skills/reconciling-issues/evaluation.md`
 - Modify: `tests/reconciling-issues/test-reconciling-issues-skill.sh` (evaluation assertions region, currently lines 162–164)
-- Create: `docs/heyi-sp/evidence/reconciling-issues/` (4 transcripts, via runner)
+- Create: `docs/superpowers/evidence/reconciling-issues/` (4 transcripts, via runner)
 
 **Interfaces:**
 - Consumes: `scripts/run-skill-evidence.sh run ...` from Task 1.
@@ -530,13 +530,13 @@ In `tests/reconciling-issues/test-reconciling-issues-skill.sh`, directly after
 add:
 
 ```bash
-assert_contains "$EVALUATION" "docs/heyi-sp/evidence/reconciling-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "docs/superpowers/evidence/reconciling-issues/" "evaluation links evidence transcripts"
 assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
 assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
 
 while IFS= read -r evidence_path; do
   assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
-done < <(grep -o 'docs/heyi-sp/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
+done < <(grep -o 'docs/superpowers/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -577,7 +577,7 @@ Expected: PASS, including `assert_not_contains ... "Expected failure mode record
 - [ ] **Step 7: Commit**
 
 ```bash
-git add skills/reconciling-issues/evaluation.md tests/reconciling-issues/test-reconciling-issues-skill.sh docs/heyi-sp/evidence/reconciling-issues/
+git add skills/reconciling-issues/evaluation.md tests/reconciling-issues/test-reconciling-issues-skill.sh docs/superpowers/evidence/reconciling-issues/
 git commit -m "Backfill reconciling-issues RED baselines and repair fabricated rows"
 ```
 
@@ -719,7 +719,7 @@ git commit -m "Add code-review application pressure scenarios"
 
 **Files:**
 - Create: `skills/code-review/evaluation.md`
-- Create: `docs/heyi-sp/evidence/code-review/` (5 transcripts, via runner)
+- Create: `docs/superpowers/evidence/code-review/` (5 transcripts, via runner)
 
 **Interfaces:**
 - Consumes: runner from Task 1; scenario prompts from Task 6.
@@ -759,7 +759,7 @@ No-skill control (RED): what a bare agent does with the planted-bug diff.
 
 | Harness | Scenario | Observed behavior | Transcript |
 | --- | --- | --- | --- |
-| <version> | Planted-bug diff (control) | <observed: format, which bugs found/missed> | [link](../../docs/heyi-sp/evidence/code-review/<file>.md) |
+| <version> | Planted-bug diff (control) | <observed: format, which bugs found/missed> | [link](../../docs/superpowers/evidence/code-review/<file>.md) |
 
 Verbatim excerpts:
 
@@ -771,10 +771,10 @@ Runs against the pre-restyle single-file SKILL.md (imported protocol).
 
 | Harness | Scenario | Result vs pass criteria | Transcript |
 | --- | --- | --- | --- |
-| <version> | Planted-bug diff | <both bugs found? JSON contract? style noise?> | [link](../../docs/heyi-sp/evidence/code-review/<file>.md) |
-| <version> | Planted-bug diff | <both bugs found? JSON contract? style noise?> | [link](../../docs/heyi-sp/evidence/code-review/<file>.md) |
-| <version> | Clean diff | <returned []?> | [link](../../docs/heyi-sp/evidence/code-review/<file>.md) |
-| <version> | Clean diff | <returned []?> | [link](../../docs/heyi-sp/evidence/code-review/<file>.md) |
+| <version> | Planted-bug diff | <both bugs found? JSON contract? style noise?> | [link](../../docs/superpowers/evidence/code-review/<file>.md) |
+| <version> | Planted-bug diff | <both bugs found? JSON contract? style noise?> | [link](../../docs/superpowers/evidence/code-review/<file>.md) |
+| <version> | Clean diff | <returned []?> | [link](../../docs/superpowers/evidence/code-review/<file>.md) |
+| <version> | Clean diff | <returned []?> | [link](../../docs/superpowers/evidence/code-review/<file>.md) |
 
 ## After restyle
 
@@ -788,14 +788,14 @@ Fill every `<...>` from the transcripts (honesty rule applies — record misses 
 
 Run:
 ```bash
-grep -o 'docs/heyi-sp/evidence/code-review/[A-Za-z0-9/._-]*\.md' skills/code-review/evaluation.md | sort -u | while read -r p; do [ -f "$p" ] && echo "OK $p" || echo "MISSING $p"; done
+grep -o 'docs/superpowers/evidence/code-review/[A-Za-z0-9/._-]*\.md' skills/code-review/evaluation.md | sort -u | while read -r p; do [ -f "$p" ] && echo "OK $p" || echo "MISSING $p"; done
 ```
 Expected: every line starts with `OK`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add skills/code-review/evaluation.md docs/heyi-sp/evidence/code-review/
+git add skills/code-review/evaluation.md docs/superpowers/evidence/code-review/
 git commit -m "Record code-review no-skill control and before-restyle runs"
 ```
 
@@ -1007,7 +1007,7 @@ git commit -m "Restructure code-review into house shell plus verbatim review-pro
 
 **Files:**
 - Modify: `skills/code-review/evaluation.md`
-- Create: 4 more transcripts under `docs/heyi-sp/evidence/code-review/` (via runner)
+- Create: 4 more transcripts under `docs/superpowers/evidence/code-review/` (via runner)
 
 **Interfaces:**
 - Consumes: runner (Task 1), prompts (Task 6), `## Before restyle` rows (Task 7), restructured skill (Task 8 committed).
@@ -1046,7 +1046,7 @@ If a regression appears (a planted bug found before but missed after, or `[]` di
 - [ ] **Step 3: Verify links and run the skill's structural test**
 
 ```bash
-grep -o 'docs/heyi-sp/evidence/code-review/[A-Za-z0-9/._-]*\.md' skills/code-review/evaluation.md | sort -u | while read -r p; do [ -f "$p" ] && echo "OK $p" || echo "MISSING $p"; done
+grep -o 'docs/superpowers/evidence/code-review/[A-Za-z0-9/._-]*\.md' skills/code-review/evaluation.md | sort -u | while read -r p; do [ -f "$p" ] && echo "OK $p" || echo "MISSING $p"; done
 bash tests/code-review-skill/test-code-review-integration.sh
 ```
 Expected: all `OK`; `STATUS: PASSED`.
@@ -1054,7 +1054,7 @@ Expected: all `OK`; `STATUS: PASSED`.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add skills/code-review/evaluation.md docs/heyi-sp/evidence/code-review/
+git add skills/code-review/evaluation.md docs/superpowers/evidence/code-review/
 git commit -m "Record code-review after-restyle runs and before/after comparison"
 ```
 
@@ -1080,10 +1080,10 @@ Expected: every suite passes.
 - [ ] **Step 2: Acceptance checklist against the spec**
 
 Verify each line, quoting the evidence:
-- Each of the four issue skills has ≥2 RED scenarios × 2 harnesses with committed transcripts (`ls docs/heyi-sp/evidence/*/` shows 4 files per issue skill).
-- `skills/code-review/` has `evaluation.md` + `pressure-scenarios.md` with control, before, and after runs (9 transcripts in `docs/heyi-sp/evidence/code-review/`).
+- Each of the four issue skills has ≥2 RED scenarios × 2 harnesses with committed transcripts (`ls docs/superpowers/evidence/*/` shows 4 files per issue skill).
+- `skills/code-review/` has `evaluation.md` + `pressure-scenarios.md` with control, before, and after runs (9 transcripts in `docs/superpowers/evidence/code-review/`).
 - `grep -rn "Expected failure mode recorded" skills/` returns nothing.
-- `git diff --check main...HEAD -- ':(exclude)docs/heyi-sp/evidence' ':(exclude)skills/code-review/pressure-scenarios.md' ':(exclude)docs/heyi-sp/plans/2026-07-02-skill-evidence-and-style.md'` is clean. (The excluded files legitimately embed unified-diff fixtures whose blank context lines are a mandatory single space; `git diff --check` misreads them as trailing whitespace.)
+- `git diff --check main...HEAD -- ':(exclude)docs/superpowers/evidence' ':(exclude)skills/code-review/pressure-scenarios.md' ':(exclude)docs/superpowers/plans/2026-07-02-skill-evidence-and-style.md'` is clean. (The excluded files legitimately embed unified-diff fixtures whose blank context lines are a mandatory single space; `git diff --check` misreads them as trailing whitespace.)
 
 - [ ] **Step 3: Commit any verification fixes; otherwise no commit**
 

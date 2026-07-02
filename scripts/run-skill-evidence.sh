@@ -4,11 +4,11 @@ set -euo pipefail
 # Skill-evidence session runner.
 #   RED   = scratch config, Superpowers absent   -> baseline evidence
 #   GREEN = scratch config, working-tree plugin  -> verification evidence
-# Design: docs/heyi-sp/specs/2026-07-02-skill-evidence-and-style-design.md
+# Design: docs/superpowers/specs/2026-07-02-skill-evidence-and-style-design.md
 # Transcripts are only ever produced by this script; never hand-write one.
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-EVIDENCE_ROOT="$REPO_ROOT/docs/heyi-sp/evidence"
+EVIDENCE_ROOT="$REPO_ROOT/docs/superpowers/evidence"
 SCRATCH_ROOT="${SKILL_EVIDENCE_SCRATCH:-$HOME/.cache/skill-evidence-scratch}"
 TODAY="$(date +%F)"
 
@@ -199,7 +199,7 @@ case "$cmd" in
     [[ -f "$prompt_file" ]] || { note "prompt file not found: $prompt_file"; exit 1; }
     transcript="$EVIDENCE_ROOT/$skill/$TODAY-$slug-$harness-$phase.md"
     run_session "$harness" "$phase" "$prompt_file" "$transcript"
-    echo "docs/heyi-sp/evidence/$skill/$TODAY-$slug-$harness-$phase.md"
+    echo "docs/superpowers/evidence/$skill/$TODAY-$slug-$harness-$phase.md"
     ;;
   *)
     usage

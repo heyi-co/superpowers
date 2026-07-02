@@ -102,7 +102,7 @@ historical paraphrased records; they are not deleted or re-fabricated.
 ### Evidence storage and format
 
 - Transcripts:
-  `docs/heyi-sp/evidence/<skill>/<YYYY-MM-DD>-<scenario-slug>-<harness>-<red|green>.md`.
+  `docs/superpowers/evidence/<skill>/<YYYY-MM-DD>-<scenario-slug>-<harness>-<red|green>.md`.
   Evidence lives under `docs/`, not `skills/`, because `skills/` ships in the
   installed plugin package.
 - Every new `evaluation.md` row includes: date, harness and exact version,
@@ -123,7 +123,7 @@ historical paraphrased records; they are not deleted or re-fabricated.
   `tests/working-from-issues/test-working-from-issues-skill.sh` asserting
   `Codex CLI 0.142.3` and `Claude Code 2.1.185`) change to assert that
   every evaluation row not annotated as a paraphrased historical record links
-  to an existing transcript file under `docs/heyi-sp/evidence/`, and that no
+  to an existing transcript file under `docs/superpowers/evidence/`, and that no
   results-table cell contains the string `Expected failure mode recorded`.
 - New assertions apply to all five skills' evaluation files.
 
@@ -229,7 +229,7 @@ Deferred as separate future work items, in no order:
 - Removing stale `GEMINI.md` references from the issue skills.
 - Documentation drift fixes: the 2026-06-28 decomposing design predates the
   Parent Closure Contract; an untracked stale copy of the issue-to-workflow
-  draft sits at `docs/heyi-sp/specs/2026-06-28-issue-to-workflow-skills-draft.md`.
+  draft sits at `docs/superpowers/specs/2026-06-28-issue-to-workflow-skills-draft.md`.
 - Wiring the pressure scenarios into the superpowers-evals drill harness.
 
 ## Risks
