@@ -54,6 +54,26 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local path="$1"
+  local needle="$2"
+  local description="$3"
+
+  if [[ ! -f "$path" ]]; then
+    fail "$description"
+    echo "    missing file: $path"
+    return
+  fi
+
+  if grep -Fq -- "$needle" "$path"; then
+    fail "$description"
+    echo "    did not expect to find: $needle"
+    echo "    in file: $path"
+  else
+    pass "$description"
+  fi
+}
+
 echo "Decomposing issues skill structural tests"
 
 assert_file_exists "$SKILL" "decomposing-issues skill exists"
@@ -139,6 +159,14 @@ assert_contains "$SCENARIOS" "Actual child links unavailable" "scenarios include
 assert_file_exists "$EVALUATION" "evaluation summary file exists"
 assert_contains "$EVALUATION" "Baseline" "evaluation summary records baseline behavior"
 assert_contains "$EVALUATION" "After change" "evaluation summary records after-change behavior"
+
+assert_contains "$EVALUATION" "docs/heyi-sp/evidence/decomposing-issues/" "evaluation links evidence transcripts"
+assert_contains "$EVALUATION" "paraphrased record, predates transcript policy" "pre-transcript rows are annotated"
+assert_not_contains "$EVALUATION" "Expected failure mode recorded" "no planned run is presented as a result"
+
+while IFS= read -r evidence_path; do
+  assert_file_exists "$REPO_ROOT/$evidence_path" "linked transcript exists: $evidence_path"
+done < <(grep -o 'docs/heyi-sp/evidence/[A-Za-z0-9/._-]*\.md' "$EVALUATION" | sort -u)
 
 assert_contains "$TRIAGING" "superpowers:decomposing-issues" "triaging recommends decomposing skill"
 assert_contains "$WORKING" "superpowers:decomposing-issues" "working-from-issues routes decomposition to decomposing skill"
