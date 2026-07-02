@@ -43,12 +43,16 @@ _Before restyle_.
 
 ### Before/after comparison
 
-Planted-bug diff: both harnesses still find both planted bugs (the falsy-zero
-`limit` regression and the dropped `await` on the audit write) with concrete
-`failure_scenario` values and the JSON findings contract — no bug found before
-was missed after. Clean diff: both harnesses still return exactly `[]` with no
-invented findings, so the empty-array discipline is preserved. The only
-difference is a severity relabel by codex on the planted-bug diff (both bugs
-P2 after vs. P1/P2 before), which does not affect any pass criterion. The
-after-restyle runs match the before-restyle runs on every criterion, so the
-restyle stands.
+No pass criterion changed on any run: both harnesses still find both planted
+bugs (the falsy-zero `limit` regression and the dropped `await` on the audit
+write) with concrete `failure_scenario` values and the JSON findings contract,
+and both still return exactly `[]` on the clean diff — the restyle stands.
+Severity and category labels did shift on both harnesses across runs: claude
+swapped the two priorities (before falsy-zero P1 / await P2, after await P1 /
+falsy-zero P2) and its after-run categories (`logic / falsy-coercion`,
+`async-correctness / audit-integrity`) drift off the protocol's category enum,
+while codex relabeled P1→P2 so both bugs are P2 after; none of this affects
+any pass criterion. One caveat: both claude after-runs could not read
+`review-protocol.md` in the headless sandbox and worked from the SKILL.md
+shell overview, so the split protocol file was only directly exercised on
+codex — claude compliance is inferred from its output contract.
