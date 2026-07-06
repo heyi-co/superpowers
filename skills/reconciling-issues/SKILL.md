@@ -188,10 +188,12 @@ Parent Disposition:
 - Recommended Next Superpowers Skill:
 
 Mutation Preview:
-- No GitHub mutation was performed.
+- Mutations performed: none, or each applied mutation with the standing
+  pre-authorization that covered it
 - Exact parent comment draft:
 - Exact labels/state changes:
-- Requires human confirmation before posting or closing.
+- Requires human confirmation before posting or closing, unless a standing
+  pre-authorization covers the exact mutation.
 ```
 
 When reconciliation is blocked, output this structure:

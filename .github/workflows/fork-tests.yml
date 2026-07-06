@@ -4,8 +4,13 @@
 # the Codex packaging test, and shellcheck over fork-maintained shell.
 name: fork-tests
 
+# push is limited to the long-lived branches so a feature branch with an open
+# PR runs once (pull_request), not twice, and tag pushes do not run at all.
+# Shellcheck baseline validated with shellcheck 0.11.0; the runner's rolling
+# version may surface new warnings after image upgrades.
 on:
   push:
+    branches: [main, dev]
   pull_request:
 
 jobs:
