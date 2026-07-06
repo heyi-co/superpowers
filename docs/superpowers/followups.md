@@ -75,6 +75,12 @@ obra/superpowers#1901 and obra/superpowers#1910. Once upstream merges them,
 verify semantic equivalence on the next sync and drop the local diff to
 clear this conflict surface.
 
+Related fact discovered by fork CI (2026-07-06): the script's tar.gz branch
+uses bsdtar-only flags (`--uid/--gid/--uname/--gname`), so packaging only
+works where bsdtar is the system tar (macOS). Fork CI runs on macos-latest
+for this reason. If portability ever matters, GNU tar needs
+`--owner=0 --group=0` instead — an upstream-shaped fix, not fork-local.
+
 ### 2026-07-06 · Upstream #1931/#1932/#1934 rewrite files carrying the fork's review-gate wiring
 
 Source: 2026-07-06 fork evaluation (upstream survey).

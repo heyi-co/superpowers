@@ -15,7 +15,11 @@ on:
 
 jobs:
   fork-tests:
-    runs-on: ubuntu-latest
+    # macos, not ubuntu: scripts/package-codex-plugin.sh (upstream code) uses
+    # bsdtar-only flags (--uid/--gid/--uname/--gname), so the packaging test
+    # can only run where bsdtar is the system tar. GNU tar compatibility is
+    # tracked in docs/superpowers/followups.md alongside upstream #1901/#1910.
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
