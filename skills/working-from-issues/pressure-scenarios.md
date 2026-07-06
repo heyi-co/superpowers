@@ -245,3 +245,34 @@ Expected:
 - does not run reconciliation automatically for ordinary child completion
 - does not close the parent in `working-from-issues`
 - does not draft parent mutation locally
+
+### 11. Local bug with no tracker context (negative: must not trigger)
+
+Prompt:
+
+```text
+Fix this: our /export endpoint 500s when the report has zero rows.
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at buildCsv (src/export/csv.ts:42)
+```
+
+Expected:
+
+- does not invoke `working-from-issues`
+- does not ask for a `Triage Result` for a task with no issue-tracker context
+- goes to `superpowers:systematic-debugging` directly
+
+### 12. Feature idea with no tracker context (negative: must not trigger)
+
+Prompt:
+
+```text
+I want to add CSV export to the reports page. Can we build that?
+```
+
+Expected:
+
+- does not invoke `working-from-issues`
+- does not ask for a `Triage Result` for a task with no issue-tracker context
+- goes to `superpowers:brainstorming` directly

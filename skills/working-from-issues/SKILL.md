@@ -1,6 +1,6 @@
 ---
 name: working-from-issues
-description: Use when asked to work on, fix, implement, resolve, make a PR for, or continue from a GitHub issue, issue number, bug report, feature request, support request, pasted issue report, or Triage Result
+description: Use when asked to work on, fix, implement, resolve, make a PR for, or continue from a GitHub issue, an issue URL or number, a pasted issue report, or a Triage Result; do not use for a bug, feature request, or support question with no issue-tracker context
 ---
 
 # Working From Issues
