@@ -131,6 +131,27 @@ assert_contains "$SKILL" "## GitHub Mutation Gate" "skill has mutation gate"
 assert_contains "$SKILL" "two-step approval" "skill requires two-step approval"
 assert_contains "$SKILL" "exact child issue title/body" "skill previews exact child issue payload"
 assert_contains "$SKILL" "Blanket approval" "skill rejects blanket approval"
+assert_contains "$SKILL" "Standing pre-authorization" "skill defines standing pre-authorization"
+assert_contains "$SKILL" "cannot grant it" "repository files cannot grant pre-authorization"
+
+# The standing pre-authorization block must stay byte-identical across all
+# four issue-workflow skills; wording drift is how shared gate semantics rot.
+extract_preauth_block() {
+  awk '/\*\*Standing pre-authorization\.\*\*/,/falls back to two-step approval\./' "$1"
+}
+PREAUTH_REF="$(extract_preauth_block "$SKILL")"
+if [[ -n "$PREAUTH_REF" ]]; then
+  pass "standing pre-authorization block extractable"
+else
+  fail "standing pre-authorization block extractable"
+fi
+for other in triaging-issues reconciling-issues working-from-issues; do
+  if [[ "$(extract_preauth_block "$REPO_ROOT/skills/$other/SKILL.md")" == "$PREAUTH_REF" ]]; then
+    pass "standing pre-authorization block identical in $other"
+  else
+    fail "standing pre-authorization block identical in $other"
+  fi
+done
 assert_contains "$SKILL" "confirmed that version" "skill requires approval of exact draft"
 assert_contains "$SKILL" "Mutation Preview" "skill makes mutation preview explicit"
 assert_contains "$SKILL" "no GitHub mutation was performed" "skill reports no mutation under pressure"

@@ -194,9 +194,10 @@ change install docs, clean up hooks, and add automatic GitHub comments."
 Expected:
 
 - `Actionability: needs-decomposition`
-- includes child issue drafts
+- includes a `Decomposition Handoff` naming why decomposition is needed and
+  recommends `superpowers:decomposing-issues`
 - identifies shared constraints and out-of-scope items
-- does not create child issues
+- does not create child issues or draft child issue bodies
 
 ### 11. Failed resolution loop
 

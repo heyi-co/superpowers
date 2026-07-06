@@ -11,21 +11,39 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 EVIDENCE_ROOT="$REPO_ROOT/docs/superpowers/evidence"
 SCRATCH_ROOT="${SKILL_EVIDENCE_SCRATCH:-$HOME/.cache/skill-evidence-scratch}"
 TODAY="$(date +%F)"
+SESSION_TIMEOUT="${SKILL_EVIDENCE_TIMEOUT:-1800}"
 
 usage() {
   cat >&2 <<'USAGE'
 Usage:
   run-skill-evidence.sh preflight <claude|codex> <red|green>
   run-skill-evidence.sh run <claude|codex> <red|green> <skill> <scenario-slug> <prompt-file>
+  run-skill-evidence.sh clean
 
 RED   = scratch config, plugin absent (baseline)
 GREEN = scratch config with the working-tree plugin loaded (verification)
 The transcript's repo-relative path is printed on the last stdout line.
+Sessions are killed after SKILL_EVIDENCE_TIMEOUT seconds (default 1800).
+clean removes the scratch root, including the credential copies seeded
+into scratch config dirs; rerun any phase to reseed.
 USAGE
   exit 2
 }
 
 note() { echo "[run-skill-evidence] $*" >&2; }
+
+TMP_TRANSCRIPT=""
+trap '[[ -n "$TMP_TRANSCRIPT" ]] && rm -f "$TMP_TRANSCRIPT"' EXIT
+
+with_timeout() { # run "$@" under SESSION_TIMEOUT; timeout exits 124/142
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "$SESSION_TIMEOUT" "$@"
+  else
+    # macOS ships no timeout(1); perl is part of the base system.
+    perl -e 'alarm shift; exec @ARGV or die "exec failed: $!"' \
+      "$SESSION_TIMEOUT" "$@"
+  fi
+}
 
 make_workspace() {
   local dir
@@ -42,6 +60,7 @@ claude_env_dir() { # $1 = red|green
   local dir="$SCRATCH_ROOT/claude-$1"
   if [[ ! -d "$dir" ]]; then
     mkdir -p "$dir"
+    chmod 700 "$SCRATCH_ROOT" "$dir"
     # Seed onboarding/user state so headless runs skip first-run prompts.
     if [[ -f "$HOME/.claude.json" ]]; then
       cp "$HOME/.claude.json" "$dir/.claude.json"
@@ -63,6 +82,7 @@ codex_env_dir() { # $1 = red|green
   local dir="$SCRATCH_ROOT/codex-$1"
   if [[ ! -d "$dir" ]]; then
     mkdir -p "$dir"
+    chmod 700 "$SCRATCH_ROOT" "$dir"
     # Codex keeps credentials in CODEX_HOME; seed auth only. No config.toml:
     # the scratch env must not inherit plugin or marketplace configuration.
     if [[ -f "$HOME/.codex/auth.json" ]]; then
@@ -104,6 +124,10 @@ harness_version() { # $1 = claude|codex
 run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
   local harness="$1" phase="$2" prompt_file="$3" transcript="$4"
   local ws cfg load_note version
+  command -v "$harness" >/dev/null 2>&1 || {
+    note "FATAL: $harness CLI not found in PATH"
+    exit 1
+  }
   ws="$(make_workspace)"
   version="$(harness_version "$harness")"
 
@@ -125,7 +149,11 @@ run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
     fi
   fi
 
+  # Build the transcript in a same-directory temp file and mv it into place
+  # once complete, so an interrupted session never leaves a half-written
+  # file at the final path.
   mkdir -p "$(dirname "$transcript")"
+  TMP_TRANSCRIPT="$(mktemp "$(dirname "$transcript")/.transcript.XXXXXX")"
   {
     echo "# Evidence transcript"
     echo
@@ -145,35 +173,42 @@ run_session() { # $1 harness, $2 phase, $3 prompt-file, $4 transcript-path
     echo "## Session output"
     echo
     echo '````text'
-  } > "$transcript"
+  } > "$TMP_TRANSCRIPT"
 
   # Session output is redacted before it reaches the transcript: local
   # home-directory paths become "~" so committed evidence does not carry
   # operator paths. With pipefail, rc still reflects the session, not sed.
+  # Sessions run under with_timeout so a hung CLI cannot block forever
+  # (timeout exit codes 124/142 land in the transcript like any failure).
   local rc=0
   if [[ "$harness" == "claude" ]]; then
     if [[ "$phase" == "green" ]]; then
-      ( cd "$ws" && CLAUDE_CONFIG_DIR="$cfg" claude -p --output-format text \
+      ( cd "$ws" && with_timeout env CLAUDE_CONFIG_DIR="$cfg" \
+          claude -p --output-format text \
           --plugin-dir "$REPO_ROOT" < "$prompt_file" ) 2>&1 \
-        | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
+        | sed "s|$HOME|~|g" >> "$TMP_TRANSCRIPT" || rc=$?
     else
-      ( cd "$ws" && CLAUDE_CONFIG_DIR="$cfg" claude -p --output-format text \
+      ( cd "$ws" && with_timeout env CLAUDE_CONFIG_DIR="$cfg" \
+          claude -p --output-format text \
           < "$prompt_file" ) 2>&1 \
-        | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
+        | sed "s|$HOME|~|g" >> "$TMP_TRANSCRIPT" || rc=$?
     fi
   else
     # Harden the session: run model-generated shell commands in a read-only
     # sandbox (-s read-only) and disable account/MCP connectors (--disable apps,
     # the current name for the connectors feature) so the session cannot reach
     # external mutating tools such as the GitHub connector.
-    ( cd "$ws" && CODEX_HOME="$cfg" codex exec -s read-only --disable apps - < "$prompt_file" ) 2>&1 \
-      | sed "s|$HOME|~|g" >> "$transcript" || rc=$?
+    ( cd "$ws" && with_timeout env CODEX_HOME="$cfg" \
+        codex exec -s read-only --disable apps - < "$prompt_file" ) 2>&1 \
+      | sed "s|$HOME|~|g" >> "$TMP_TRANSCRIPT" || rc=$?
   fi
   {
     echo '````'
     echo
     echo "- Exit code: $rc"
-  } >> "$transcript"
+  } >> "$TMP_TRANSCRIPT"
+  mv "$TMP_TRANSCRIPT" "$transcript"
+  TMP_TRANSCRIPT=""
   if [[ "$rc" -ne 0 ]]; then
     note "session exited non-zero ($rc); recorded in transcript"
   fi
@@ -203,8 +238,22 @@ case "$cmd" in
     harness="$2"; phase="$3"; skill="$4"; slug="$5"; prompt_file="$6"
     [[ -f "$prompt_file" ]] || { note "prompt file not found: $prompt_file"; exit 1; }
     transcript="$EVIDENCE_ROOT/$skill/$TODAY-$slug-$harness-$phase.md"
+    if [[ -e "$transcript" ]]; then
+      note "FATAL: transcript already exists: $transcript"
+      note "Evidence files are append-only history; rerun with a different scenario slug."
+      exit 1
+    fi
     run_session "$harness" "$phase" "$prompt_file" "$transcript"
     echo "docs/superpowers/evidence/$skill/$TODAY-$slug-$harness-$phase.md"
+    ;;
+  clean)
+    [[ $# -eq 1 ]] || usage
+    if [[ -d "$SCRATCH_ROOT" ]]; then
+      rm -rf "$SCRATCH_ROOT"
+      note "removed scratch root (including seeded credential copies): $SCRATCH_ROOT"
+    else
+      note "nothing to clean: $SCRATCH_ROOT"
+    fi
     ;;
   *)
     usage

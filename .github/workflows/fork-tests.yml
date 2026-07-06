@@ -1,0 +1,50 @@
+# Fork-side CI for heyi-co/superpowers.
+# Upstream ships no .github/workflows, so this file is a clean fork addition
+# with no sync conflict surface. It runs the fork-owned structural tests,
+# the Codex packaging test, and shellcheck over fork-maintained shell.
+name: fork-tests
+
+# push is limited to the long-lived branches so a feature branch with an open
+# PR runs once (pull_request), not twice, and tag pushes do not run at all.
+# Shellcheck baseline validated with shellcheck 0.11.0; the runner's rolling
+# version may surface new warnings after image upgrades.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  fork-tests:
+    # macos, not ubuntu: scripts/package-codex-plugin.sh (upstream code) uses
+    # bsdtar-only flags (--uid/--gid/--uname/--gname), so the packaging test
+    # can only run where bsdtar is the system tar. GNU tar compatibility is
+    # tracked in docs/superpowers/followups.md alongside upstream #1901/#1910.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skill structural tests
+        run: |
+          bash tests/code-review-skill/test-code-review-integration.sh
+          bash tests/triaging-issues/test-triaging-issues-skill.sh
+          bash tests/decomposing-issues/test-decomposing-issues-skill.sh
+          bash tests/reconciling-issues/test-reconciling-issues-skill.sh
+          bash tests/working-from-issues/test-working-from-issues-skill.sh
+
+      - name: Codex package test
+        run: bash tests/codex/test-package-codex-plugin.sh
+
+      - name: Install shellcheck
+        run: command -v shellcheck >/dev/null || brew install shellcheck
+
+      - name: Shellcheck fork scripts and tests
+        run: |
+          shellcheck -S warning \
+            scripts/run-skill-evidence.sh \
+            scripts/package-codex-plugin.sh \
+            tests/code-review-skill/*.sh \
+            tests/triaging-issues/*.sh \
+            tests/decomposing-issues/*.sh \
+            tests/reconciling-issues/*.sh \
+            tests/working-from-issues/*.sh \
+            tests/codex/*.sh
