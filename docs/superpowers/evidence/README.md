@@ -30,6 +30,14 @@ Prompts come verbatim from the skill's `pressure-scenarios.md`.
 
 ## Known limitations
 
+- **GREEN transcript coverage is uneven.** Only `code-review` has committed
+  green transcripts (plus a no-skill control red). For the four
+  issue-workflow skills (`triaging-issues`, `decomposing-issues`,
+  `reconciling-issues`, `working-from-issues`) the committed transcripts are
+  RED baselines only; their green (skill-loaded) results in `evaluation.md`
+  are paraphrased rows annotated `paraphrased record, predates transcript
+  policy`. Backfilling green transcripts with the runner is tracked as
+  follow-up work.
 - Transcripts dated 2026-07-02 predate the runner's path redaction and may
   contain local home-directory paths or the operator's git identity from
   session-internal commands (no credentials; verified at review). They are

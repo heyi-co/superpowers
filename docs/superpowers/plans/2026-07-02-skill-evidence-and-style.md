@@ -1,5 +1,11 @@
 # Skill Evidence Backfill and Code-Review Restyle Implementation Plan
 
+> **Historical record (2026-07-02).** This plan is a dated snapshot and is not
+> kept in sync with the tree. In particular, the runner script embedded in
+> Task 1 reflects the version first landed; `scripts/run-skill-evidence.sh` is
+> the live source of truth and has since gained session timeouts, atomic
+> transcript writes, overwrite protection, and a `clean` subcommand.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Backfill real RED-baseline evidence (with committed transcripts) for the four issue-workflow skills, fix the evaluation-record integrity defects, and restructure `skills/code-review` into a house-style shell plus a verbatim protocol file — per `docs/superpowers/specs/2026-07-02-skill-evidence-and-style-design.md`.

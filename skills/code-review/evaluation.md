@@ -56,3 +56,13 @@ any pass criterion. One caveat: both claude after-runs could not read
 `review-protocol.md` in the headless sandbox and worked from the SKILL.md
 shell overview, so the split protocol file was only directly exercised on
 codex — claude compliance is inferred from its output contract.
+
+## Protocol revisions
+
+Local fork edits to `review-protocol.md` after the verbatim import. Each entry
+states the change, why, and what evidence backs it.
+
+| Date | Change | Nature and evidence |
+| --- | --- | --- |
+| 2026-07-06 | Phase 1 finder-angle count corrected from "Run 10 independent finder angles" to "Run 11" | Factual alignment, no semantic change: the protocol defines 11 angle sections (Angle A–E, Reuse, Simplification, Efficiency, Altitude, Conventions, Security) and the candidate contract's `angle` enum lists 11 values, so the stated count contradicted the protocol's own contents and made the parallel fan-out instruction ambiguous. No new session runs; the edit makes the instruction match what every recorded run already executed. |
+| 2026-07-06 | Intro no longer names the harness-specific `/code-review max` command; it now says "the max review protocol" | Wording only: the protocol is consumed on multiple harnesses (Codex CLI has no `/code-review` command), so a Claude Code command name in the role preamble was misleading. No behavior instruction changed. No new session runs. |
