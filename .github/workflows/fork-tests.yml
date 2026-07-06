@@ -34,6 +34,9 @@ jobs:
       - name: Codex package test
         run: bash tests/codex/test-package-codex-plugin.sh
 
+      - name: Install shellcheck
+        run: command -v shellcheck >/dev/null || brew install shellcheck
+
       - name: Shellcheck fork scripts and tests
         run: |
           shellcheck -S warning \
