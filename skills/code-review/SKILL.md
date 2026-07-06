@@ -55,6 +55,26 @@ and `failure_scenario`; `[]` when nothing survives verification. When the
 human asked for a readable review, present the same findings in the same
 order as prose with those fields.
 
+## Gate Semantics
+
+This section is the authoritative definition of gate behavior; workflow
+skills that route here restate it, they do not redefine it. It applies when
+this skill acts as a merge or finish gate (the final whole-branch gate in
+superpowers:subagent-driven-development, the max route in
+superpowers:requesting-code-review, or any explicit gate request):
+
+- P0, P1, and P2 findings block finishing. P3 findings are non-blocking by
+  default.
+- Only your human partner can accept a blocking finding and proceed anyway.
+  Record any such acceptance next to the finding.
+- After fixing findings, rerun this skill on the updated diff. The gate
+  passes only on a fresh run with no remaining blocking findings.
+- Priority labels can drift between runs on the same finding (see
+  evaluation.md); the latest run's labels are authoritative.
+- Circuit breaker: if two consecutive fix-and-rerun cycles leave the
+  blocking-finding count undiminished, stop the loop and escalate to your
+  human partner with the current findings list instead of iterating again.
+
 ## Red Flags
 
 Stop and correct course if you are:
@@ -64,6 +84,7 @@ Stop and correct course if you are:
 - Posting PR or inline comments without an explicit ask
 - Softening, dropping, or re-ranking findings so a gate passes
 - Inventing findings to avoid returning `[]`
+- Looping fix-and-rerun past the circuit breaker instead of escalating
 
 ## Behavior Testing
 
