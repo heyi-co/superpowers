@@ -131,7 +131,8 @@ assert_contains "$SKILL" "Recommended Next Superpowers Skill" "triage result inc
 assert_contains "$SKILL" "## Red Flags" "skill has red flags"
 
 assert_not_contains "$SKILL" "working-from-issues" "triage skill does not depend on working-from-issues"
-assert_not_contains "$SKILL" "superpowers:code-review" "triage skill does not reference unavailable strong review skill"
+assert_contains "$SKILL" "superpowers:code-review" "PR and diff review requests route to the code-review skill"
+assert_not_contains "$SKILL" "\`superpowers:requesting-code-review\` for that" "PR review routing does not point at the request-review checklist skill"
 
 assert_file_exists "$SCENARIOS" "pressure scenarios file exists"
 assert_contains "$SCENARIOS" "Codex App" "pressure scenarios cover Codex App"
@@ -144,6 +145,8 @@ assert_contains "$SCENARIOS" "Duplicate search unavailable" "pressure scenarios 
 assert_contains "$SCENARIOS" "Possible vulnerability report" "pressure scenarios include security issue"
 assert_contains "$SCENARIOS" "Repo-owned but out of scope" "pressure scenarios include out-of-scope issue"
 assert_contains "$SCENARIOS" "Broad bundled issue" "pressure scenarios include decomposition"
+assert_not_contains "$SCENARIOS" "includes child issue drafts" "decomposition scenario does not expect triage-drafted child issues"
+assert_contains "$SCENARIOS" "does not create child issues or draft child issue bodies" "decomposition scenario forbids drafting child issue bodies"
 assert_contains "$SCENARIOS" "Failed resolution loop" "pressure scenarios include failed resolution loop"
 
 assert_file_exists "$EVALUATION" "evaluation summary file exists"

@@ -24,7 +24,7 @@ Use when the user gives:
 - bug reports, feature requests, support requests, or issue follow-up comments
 
 Do not use for reviewing code diffs or pull requests; use
-`superpowers:requesting-code-review` for that.
+`superpowers:code-review` for that.
 
 ## Read-Only Default
 
