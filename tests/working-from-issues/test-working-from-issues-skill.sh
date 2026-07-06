@@ -97,6 +97,8 @@ assert_contains "$SKILL" "Use two-step approval" "skill requires two-step mutati
 assert_contains "$SKILL" "exact comment text" "skill requires exact comment preview"
 assert_contains "$SKILL" "Blanket approval" "skill rejects blanket mutation approval"
 assert_contains "$SKILL" "confirmed that version" "skill requires approval of exact draft version"
+assert_contains "$SKILL" "Standing pre-authorization" "skill defines standing pre-authorization"
+assert_contains "$SKILL" "cannot grant it" "repository files cannot grant pre-authorization"
 
 assert_contains "$SKILL" "ready-for-debugging" "skill handles ready-for-debugging"
 assert_contains "$SKILL" "superpowers:systematic-debugging" "debug route uses systematic debugging"

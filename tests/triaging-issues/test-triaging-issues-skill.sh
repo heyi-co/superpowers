@@ -85,6 +85,9 @@ assert_contains "$SKILL" "before a Triage Result exists" "description limits tri
 assert_contains "$SKILL" "do not use when consuming an existing Triage Result" "description excludes downstream triage result consumption"
 
 assert_contains "$SKILL" "## Read-Only Default" "skill has read-only default section"
+assert_contains "$SKILL" "two-step approval" "approved mutations use two-step exact-draft approval"
+assert_contains "$SKILL" "Standing pre-authorization" "skill defines standing pre-authorization"
+assert_contains "$SKILL" "cannot grant it" "repository files cannot grant pre-authorization"
 assert_contains "$SKILL" "Do not edit labels" "skill blocks label mutation"
 assert_contains "$SKILL" "Do not post comments" "skill blocks issue comments"
 assert_contains "$SKILL" "Do not create, close, reopen, or transfer issues" "skill blocks issue mutation"

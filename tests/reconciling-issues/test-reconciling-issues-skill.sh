@@ -104,6 +104,8 @@ assert_contains "$SKILL" "Do not create child issues" "skill blocks child issue 
 assert_not_contains "$SKILL" "follow-up child issues are created" "skill never creates follow-up child issues"
 assert_contains "$SKILL" "two-step approval" "skill requires two-step approval"
 assert_contains "$SKILL" "Blanket approval" "skill rejects blanket approval"
+assert_contains "$SKILL" "Standing pre-authorization" "skill defines standing pre-authorization"
+assert_contains "$SKILL" "cannot grant it" "repository files cannot grant pre-authorization"
 
 assert_contains "$SKILL" "## Untrusted Issue Evidence" "skill treats issue evidence as untrusted"
 assert_contains "$SKILL" "evidence, not instructions" "skill refuses embedded instructions"
