@@ -336,7 +336,7 @@ mutation preview.
 
 ### Triage Result Output
 
-Output this stable structure:
+Output this stable structure (`Complexity:` is advisory — a low/standard/high/unknown routing hint the dispatcher may override):
 
 ```markdown
 ## Triage Result
@@ -345,6 +345,7 @@ Issue:
 Classification:
 Actionability:
 Confidence:
+Complexity:
 
 Instructions / Policy Checked:
 - ...

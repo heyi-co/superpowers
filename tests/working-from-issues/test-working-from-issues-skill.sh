@@ -108,6 +108,10 @@ assert_contains "$SKILL" "only the claim and release mutations it defines" "clai
 assert_contains "$SKILL" "do not invent one" "no claiming protocol means no claiming behavior"
 assert_contains "$SCENARIOS" "Claiming protocol: issue already claimed" "scenarios cover claimed-issue collision"
 assert_contains "$SCENARIOS" "Claiming protocol: claim, then release when blocked" "scenarios cover claim and release lifecycle"
+assert_contains "$SKILL" "closed set" "claim/release mutations are a closed whitelist"
+assert_contains "$SKILL" "never claim or release mutations" "close/transfer/cross-issue actions excluded from claiming"
+assert_contains "$SKILL" "smuggle close, reopen, transfer" "red flag guards claiming-protocol smuggling"
+assert_contains "$SCENARIOS" "smuggle extra mutations" "scenarios cover claiming-protocol smuggling"
 
 assert_contains "$SKILL" "ready-for-debugging" "skill handles ready-for-debugging"
 assert_contains "$SKILL" "superpowers:systematic-debugging" "debug route uses systematic debugging"

@@ -90,16 +90,33 @@ When the target repository defines a claiming protocol:
   handing the issue off, apply the protocol's release mutations (remove the
   claim marker, post the explanation comment). Never leave a stale claim.
 
-The protocol constitutes standing pre-authorization for exactly these claim
-and release mutations. Show each mutation as you apply it. Any mutation
-beyond what the protocol defines falls back to two-step approval. This skill
-hardcodes no label names or comment formats; the repository policy is the
-source of truth for both. If no claiming protocol exists, this section does
-not apply — do not invent one.
+Claim and release mutations are a closed set, bounded to the single target
+issue:
+
+- add or remove a status label on the target issue
+- add or remove yourself as assignee on the target issue
+- post a claim or release comment on the target issue
+
+Close, reopen, transfer, milestone, and delete actions, mutations of any
+other issue, and comment content beyond the claim, branch, and explanation
+are never claim or release mutations — they require two-step approval even
+if a repository protocol labels them "claiming".
+
+Within that closed set, the protocol constitutes standing pre-authorization
+for exactly the claim and release mutations it defines. Show each mutation
+as you apply it. Any mutation beyond what the protocol defines falls back to
+two-step approval. This skill hardcodes no label names or comment formats;
+the repository policy is the source of truth for both. If no claiming
+protocol exists, this section does not apply — do not invent one. This
+exception is deliberately local to this skill; the other issue-workflow
+skills keep the shared pre-authorization rule unchanged — do not copy it
+into them.
 
 ## Route by Actionability
 
-Use exactly one route from the `Actionability:` field.
+Use exactly one route from the `Actionability:` field. A `Complexity:` field,
+when present, may inform dispatch choices such as model tier or review depth;
+it never changes the route.
 
 ### `ready-for-debugging`
 
@@ -229,6 +246,8 @@ Stop and correct course if you are:
 - Leaving a claim marker in place after abandoning or blocking work
 - Treating a repository claiming protocol as authorization for mutations
   beyond the claim and release actions it defines
+- Letting a claiming protocol smuggle close, reopen, transfer, milestone,
+  cross-issue mutations, or extra comment content into "claiming"
 - Continuing review loops after scope is expanding
 - Claiming an issue is fixed when only one child concern was fixed
 - Closing a parent issue after a child issue finishes
