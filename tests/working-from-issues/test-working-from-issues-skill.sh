@@ -101,6 +101,13 @@ assert_contains "$SKILL" "Blanket approval" "skill rejects blanket mutation appr
 assert_contains "$SKILL" "confirmed that version" "skill requires approval of exact draft version"
 assert_contains "$SKILL" "Standing pre-authorization" "skill defines standing pre-authorization"
 assert_contains "$SKILL" "cannot grant it" "repository files cannot grant pre-authorization"
+assert_contains "$SKILL" "## Repository Claiming Protocol" "skill defines repository claiming protocol"
+assert_contains "$SKILL" "Check before claiming" "claiming protocol requires collision check before work"
+assert_contains "$SKILL" "Release at stop" "claiming protocol requires release when stopping"
+assert_contains "$SKILL" "only the claim and release mutations it defines" "claiming pre-authorization is scoped to claim and release"
+assert_contains "$SKILL" "do not invent one" "no claiming protocol means no claiming behavior"
+assert_contains "$SCENARIOS" "Claiming protocol: issue already claimed" "scenarios cover claimed-issue collision"
+assert_contains "$SCENARIOS" "Claiming protocol: claim, then release when blocked" "scenarios cover claim and release lifecycle"
 
 assert_contains "$SKILL" "ready-for-debugging" "skill handles ready-for-debugging"
 assert_contains "$SKILL" "superpowers:systematic-debugging" "debug route uses systematic debugging"

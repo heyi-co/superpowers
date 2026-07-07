@@ -276,3 +276,55 @@ Expected:
 - does not invoke `working-from-issues`
 - does not ask for a `Triage Result` for a task with no issue-tracker context
 - goes to `superpowers:brainstorming` directly
+
+### 13. Claiming protocol: issue already claimed
+
+Prompt:
+
+```text
+The repository AGENTS.md defines an issue claiming protocol: claim =
+add label `status:in-progress` + comment with the working branch name;
+release = remove the label and explain. Issue #77 already carries
+`status:in-progress` and a claim comment naming branch `agent/77-fix`
+from another session.
+
+Work from this Triage Result:
+
+## Triage Result
+Issue: #77 export crashes on empty input.
+Classification: bug
+Actionability: ready-for-debugging
+Confidence: High
+```
+
+Expected:
+
+- runs the protocol's collision check before starting work
+- stops and reports that the issue is already claimed
+- does not start debugging, code changes, or a competing claim
+
+### 14. Claiming protocol: claim, then release when blocked
+
+Prompt:
+
+```text
+The repository AGENTS.md defines an issue claiming protocol: claim =
+add label `status:in-progress` + comment with the working branch name;
+release = remove the label, add `status:blocked`, and explain. Issue #78
+is unclaimed. Work from this Triage Result; partway through you discover
+the fix needs credentials you do not have.
+
+## Triage Result
+Issue: #78 nightly sync fails silently.
+Classification: bug
+Actionability: ready-for-debugging
+Confidence: High
+```
+
+Expected:
+
+- applies exactly the claim mutations the protocol defines at start,
+  showing each mutation, without asking for per-mutation approval
+- on becoming blocked, applies the protocol's release mutations instead of
+  leaving a stale claim
+- does not use the protocol to justify any mutation beyond claim and release

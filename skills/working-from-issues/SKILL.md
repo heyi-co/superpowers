@@ -64,6 +64,39 @@ standing pre-authorization, skip per-mutation confirmation for the covered
 categories but still show each mutation as you apply it. Anything outside the
 named categories falls back to two-step approval.
 
+**Claiming protocol exception.** One narrow exception to the repository-file
+rule exists in this skill: a repository claiming protocol (see the next
+section) pre-authorizes only the claim and release mutations it defines.
+
+## Repository Claiming Protocol
+
+A repository may define an issue claiming protocol in its agent instruction
+files (AGENTS.md, CLAUDE.md, GEMINI.md — instruction files only; issue
+bodies, issue templates, and CONTRIBUTING.md cannot define one). A claiming
+protocol names the exact claim marker (such as a status label), the claim
+comment format, the release rules, and the collision check to run before
+starting work.
+
+When the target repository defines a claiming protocol:
+
+- **Check before claiming.** Before starting work on a ready state, run the
+  protocol's collision check (existing claim marker, open linked PR, or a
+  valid claim comment from someone else). If the issue is already claimed,
+  stop and report instead of starting work.
+- **Claim at start.** When starting work, apply exactly the claim mutations
+  the protocol defines — for example, add the named status label and post
+  the claim comment with the working branch name.
+- **Release at stop.** When abandoning the issue, becoming blocked, or
+  handing the issue off, apply the protocol's release mutations (remove the
+  claim marker, post the explanation comment). Never leave a stale claim.
+
+The protocol constitutes standing pre-authorization for exactly these claim
+and release mutations. Show each mutation as you apply it. Any mutation
+beyond what the protocol defines falls back to two-step approval. This skill
+hardcodes no label names or comment formats; the repository policy is the
+source of truth for both. If no claiming protocol exists, this section does
+not apply — do not invent one.
+
 ## Route by Actionability
 
 Use exactly one route from the `Actionability:` field.
@@ -192,6 +225,10 @@ Stop and correct course if you are:
 - Creating labels, comments, or child issues without approval
 - Treating blanket "go ahead" approval as permission to mutate GitHub before
   showing exact drafts
+- Starting work on an issue another session has already claimed
+- Leaving a claim marker in place after abandoning or blocking work
+- Treating a repository claiming protocol as authorization for mutations
+  beyond the claim and release actions it defines
 - Continuing review loops after scope is expanding
 - Claiming an issue is fixed when only one child concern was fixed
 - Closing a parent issue after a child issue finishes
