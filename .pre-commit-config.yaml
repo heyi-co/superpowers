@@ -19,3 +19,10 @@ repos:
         language: system
         pass_filenames: false
         files: ^evals/.*\.py$
+
+      - id: version-sync-check
+        name: version sync check
+        entry: bash scripts/bump-version.sh --check
+        language: system
+        pass_filenames: false
+        files: ^(package\.json|\.(claude|cursor|codex|kimi)-plugin/(plugin|marketplace)\.json|gemini-extension\.json)$
