@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Version consistency check
+        run: bash scripts/bump-version.sh --check
+
       - name: Skill structural tests
         run: |
           bash tests/code-review-skill/test-code-review-integration.sh

@@ -1,5 +1,34 @@
 # Superpowers Release Notes
 
+## v6.1.1-heyi.1 (2026-07-08)
+
+First release on the fork's independent version line. From here the fork
+versions as `<upstream-baseline>-heyi.<N>` (see `docs/superpowers/versioning.md`):
+the prefix pins the upstream release this fork is based on (currently v6.1.1)
+and `-heyi.N` counts fork iterations. This replaces the earlier self-minted
+numbers (6.1.2, 6.2.0), which would collide with upstream's own numbering.
+
+### Versioning & packaging
+
+- **All seven harness manifests are back in sync.** The 6.2.0 release had
+  hand-edited only the Claude manifests, leaving `.codex-plugin`,
+  `.cursor-plugin`, `.kimi-plugin`, `gemini-extension.json`, and `package.json`
+  at 6.1.1. Since Claude Code and Codex both gate updates on the version string
+  changing, users on those harnesses never refreshed to the newer content. All
+  manifests now carry one version, bumped only via `scripts/bump-version.sh`.
+- **Drift guard.** A version-consistency check runs in fork-tests CI and as a
+  pre-commit hook, so a future partial bump fails loudly instead of silently
+  shipping stale content.
+
+### Fork content on this baseline (since upstream v6.1.1)
+
+- Repository claiming protocol and a triage complexity routing hint in the
+  issue-workflow skills.
+- Issue-workflow skills — triaging, working-from, decomposing, reconciling —
+  plus a house code-review skill shell.
+- Fork-side CI: structural skill tests, the Codex packaging test, and
+  shellcheck.
+
 ## v6.1.1 (2026-07-02)
 
 ### Codex
