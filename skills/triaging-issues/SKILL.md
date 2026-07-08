@@ -195,6 +195,18 @@ During triage, explain why decomposition is needed and recommend
 decomposition, draft full child issue bodies, or replace the decomposition
 skill's `Scope Atoms` and `Coverage Matrix` with an inline split template.
 
+## Complexity
+
+Estimate implementation complexity as a routing hint: `low`, `standard`, or
+`high`. Write `unknown` when the evidence is not enough to estimate.
+
+Complexity is advisory only. It suggests how to route or dispatch the work —
+for example which model tier to assign or how much review depth to plan — and
+the dispatcher may override it. It does not authorize work, does not change
+actionability, and is not a priority judgment. Repository policy may map the
+estimate to labels; that mapping and any label application follow the normal
+mutation rules.
+
 ## Triage Result
 
 Output this structure:
@@ -206,6 +218,7 @@ Issue:
 Classification:
 Actionability:
 Confidence:
+Complexity:
 
 Instructions / Policy Checked:
 - ...
