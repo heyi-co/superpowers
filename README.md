@@ -224,7 +224,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 - **reconciling-issues** - Audit decomposed parent issues against child outcomes before closure
 - **working-from-issues** - Route triaged issues into the right Superpowers workflow
 - **requesting-code-review** - Pre-review checklist
-- **code-review** - Recall-first review gate for PRs, branches, and diffs
+- **code-review** - Recall-first max review for high-risk changes, bug hunts, and explicit deep reviews
 - **receiving-code-review** - Responding to feedback
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow

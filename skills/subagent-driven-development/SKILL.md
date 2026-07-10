@@ -5,11 +5,11 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad max-grade whole-branch review at the end. Dispatch a fresh final reviewer subagent with `code-review` for that last gate; do not replace reviewer isolation with an in-session self-review.
+Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad whole-branch review at the end — ordinary review by default, escalated to `code-review` max review when the branch is high-risk, large, or your human partner asks for it. Dispatch a fresh final reviewer subagent for that last gate; do not replace reviewer isolation with an in-session self-review.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Core principle:** Fresh subagent per task + task-scoped review (spec + quality) + final max `code-review` = high quality, fast iteration
+**Core principle:** Fresh subagent per task + task-scoped review (spec + quality) + final whole-branch review (max only when risk, size, or your human partner demands it) = high quality, fast iteration
 
 **Narration:** between tool calls, narrate at most one short line — the
 ledger and the tool results carry the record.
@@ -62,8 +62,8 @@ digraph process {
 
     "Read plan, note context and global constraints, create todos" [shape=box];
     "More tasks remain?" [shape=diamond];
-    "Dispatch a fresh final reviewer subagent with `code-review`" [shape=box];
-    "P0, P1, and P2 findings block finishing" [shape=diamond];
+    "Dispatch a fresh final reviewer subagent (ordinary review, or `code-review` when high-risk or large)" [shape=box];
+    "Blocking findings (Critical/Important or P0/P1) remain?" [shape=diamond];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context and global constraints, create todos" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -78,11 +78,11 @@ digraph process {
     "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
     "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="no"];
-    "Dispatch a fresh final reviewer subagent with `code-review`" -> "P0, P1, and P2 findings block finishing";
-    "P0, P1, and P2 findings block finishing" -> "Dispatch final-review fix subagent for P0/P1/P2 findings" [label="yes"];
-    "Dispatch final-review fix subagent for P0/P1/P2 findings" -> "Dispatch a fresh final reviewer subagent with `code-review`" [label="rerun final review"];
-    "P0, P1, and P2 findings block finishing" -> "Use superpowers:finishing-a-development-branch" [label="no"];
+    "More tasks remain?" -> "Dispatch a fresh final reviewer subagent (ordinary review, or `code-review` when high-risk or large)" [label="no"];
+    "Dispatch a fresh final reviewer subagent (ordinary review, or `code-review` when high-risk or large)" -> "Blocking findings (Critical/Important or P0/P1) remain?";
+    "Blocking findings (Critical/Important or P0/P1) remain?" -> "Dispatch final-review fix subagent for the blocking findings" [label="yes"];
+    "Dispatch final-review fix subagent for the blocking findings" -> "Dispatch a fresh final reviewer subagent (ordinary review, or `code-review` when high-risk or large)" [label="re-review scoped to the fix wave"];
+    "Blocking findings (Critical/Important or P0/P1) remain?" -> "Use superpowers:finishing-a-development-branch" [label="no"];
 }
 ```
 
@@ -109,8 +109,9 @@ Use the least powerful model that can handle each role to conserve cost and incr
 **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
 
 **Architecture and design tasks**: use the most capable available model.
-The final whole-branch review is one of these — dispatch it on the most
-capable available model, not the session default.
+A final whole-branch review that escalates to `code-review` max review is
+one of these — dispatch it on the most capable available model. A routine
+final review scales its model like any review task (below).
 
 **Review tasks**: choose the model with the same judgment, scaled to the
 diff's size, complexity, and risk. A small mechanical diff does not need the
@@ -166,7 +167,9 @@ Per-task reviews are task-scoped gates. The broad review happens once, at the
 final whole-branch review.
 
 Per-task reviews remain task-scoped. Do not run max review after every task.
-The final whole-branch review is the max review gate.
+The final whole-branch review is the broad gate: ordinary review by default,
+`code-review` max review when the branch is high-risk, large, or your human
+partner asks for it.
 
 When you fill a reviewer template:
 
@@ -221,11 +224,11 @@ When you fill a reviewer template:
   whole suite. Before re-dispatching the reviewer, confirm the fix report
   contains the covering tests, the command run, and the output; dispatch
   the re-review once all three are present.
-- If the final whole-branch review returns P0/P1/P2 findings, dispatch ONE fix
+- If the final whole-branch review returns blocking findings, dispatch ONE fix
   subagent with the complete findings list — not one fixer per finding.
   Per-finding fixers each rebuild context and re-run suites; a real
   session's final-review fix wave cost more than all its tasks combined.
-- P0, P1, and P2 findings block finishing unless your human partner explicitly accepts them. P3 findings are non-blocking by default. After any final-review fix wave, dispatch a fresh final reviewer subagent with `code-review` again on the updated branch diff before finishing.
+- Blocking findings (Critical/Important from ordinary review, P0/P1 from `code-review`) block finishing unless your human partner explicitly accepts them. P2 findings from `code-review` go to your human partner to fix now or track as follow-up; P3 findings are non-blocking by default. After any final-review fix wave, dispatch a re-review scoped to the fixed findings and the code the fixes touched; rerun the full protocol only when the fix wave was broad.
 
 ## File Handoffs
 
@@ -278,7 +281,7 @@ a ledger file, not only in todos.
 
 - [implementer-prompt.md](implementer-prompt.md) - Dispatch implementer subagent
 - [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
-- Final whole-branch review: use `code-review`
+- Final whole-branch review: ordinary reviewer via superpowers:requesting-code-review, or `code-review` when the branch is high-risk or large
 
 ## Example Workflow
 
@@ -337,6 +340,7 @@ Task reviewer: Spec ✅. Task quality: Approved.
 ...
 
 [After all tasks]
+[Branch spans many subsystems, so the final gate escalates to max review]
 [Dispatch a fresh final reviewer subagent with `code-review` using the plan file, progress ledger, final review package, and unresolved prior Minor/P3 findings]
 Final code-review output: `[]`
 
@@ -412,9 +416,10 @@ Done!
 - Don't skip the re-review
 
 **If final `code-review` returns findings:**
-- P0/P1/P2 findings block finishing unless your human partner explicitly accepts them
+- P0/P1 findings block finishing unless your human partner explicitly accepts them
 - Dispatch one final-review fix subagent with the complete blocking findings list
-- Rerun `code-review` after the fix wave
+- Re-review the fix wave: scoped to the fixed findings and the code the fixes touched; rerun the full protocol only when the fix wave was broad
+- P2 findings go to your human partner to fix now or track as follow-up
 - P3 findings are non-blocking by default; record them or fix them only when judgment or user direction says they are worth the churn
 
 **If subagent fails task:**
@@ -426,7 +431,7 @@ Done!
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:code-review** - Max-grade JSON-first review for the final whole-branch review
+- **superpowers:code-review** - Max-grade JSON-first review when the final whole-branch review escalates to max (high-risk or large branch, or on request)
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
