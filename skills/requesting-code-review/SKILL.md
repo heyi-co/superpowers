@@ -23,15 +23,15 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 
 ## Review Modes
 
-Use ordinary review for small diffs, development checkpoints, and routine feature reviews. Ordinary review dispatches a `general-purpose` subagent with [code-reviewer.md](code-reviewer.md) and returns human-readable strengths, issues, recommendations, and a merge assessment.
+Ordinary review is the default: small diffs, development checkpoints, routine feature reviews, and routine branch or PR merge gates. Ordinary review dispatches a `general-purpose` subagent with [code-reviewer.md](code-reviewer.md) and returns human-readable strengths, issues, recommendations, and a merge assessment.
 
-Use `code-review` for max review when the user asks for a "max review", "deep review", "strong review", "comprehensive review", PR review, branch review, bug hunt, security review, contract-break review, regression search, or merge-gate review. The `code-review` skill runs the JSON-first max-review protocol and is the preferred final review for high-risk or pre-merge changes.
+Use `code-review` for max review when the user explicitly asks for a "max review", "deep review", "strong review", "comprehensive review", "bug hunt", "security review", "contract-break review", or "regression search"; when the change is high-risk (auth or permissions, migrations or data integrity, public API contracts, concurrency, payment paths); or when a merge gate covers a large branch that spans many subsystems. The `code-review` skill runs the JSON-first max-review protocol.
 
 If max review applies, invoke `code-review` instead of filling [code-reviewer.md](code-reviewer.md).
 
-When `code-review` returns JSON findings, triage them by priority before finishing work. P0, P1, and P2 findings are blocking. P3 findings are non-blocking by default. Only your human partner can explicitly accept blocking findings and choose to proceed anyway.
+When `code-review` returns JSON findings, triage them by priority before finishing work. P0 and P1 findings are blocking. P2 findings are non-blocking by default: present each one to your human partner to fix now or track as follow-up. P3 findings are non-blocking by default. Only your human partner can explicitly accept blocking findings and choose to proceed anyway.
 
-After fixing max-review findings, rerun `code-review` on the updated diff. Do not assume a fix wave cleared the review gate until the fresh rerun confirms it.
+After fixing max-review findings, re-verify with a review scoped to the fixed findings and the code the fixes touched; rerun the full `code-review` protocol only when the fix wave was broad. Do not assume a fix wave cleared the review gate until the re-verification confirms it.
 
 ## How to Request Ordinary Review
 
@@ -90,18 +90,18 @@ You: [Fix progress indicators]
 
 **Subagent-Driven Development:**
 - Per-task review uses the task-scoped SDD reviewer.
-- Final whole-branch review should use `code-review` for max review.
-- P0, P1, and P2 findings are blocking before finishing the branch unless the human explicitly accepts them.
-- P3 findings are non-blocking by default and should be tracked or fixed based on judgment.
-- After any final-review fix wave, rerun `code-review` on the updated branch diff.
+- Final whole-branch review uses ordinary review by default; use `code-review` when the branch is high-risk, large, or your human partner asks for max review.
+- Blocking findings (Critical/Important from ordinary review, P0/P1 from `code-review`) block finishing the branch unless the human explicitly accepts them.
+- P2 findings from `code-review` go to your human partner to fix now or track as follow-up; P3 findings are non-blocking by default and should be tracked or fixed based on judgment.
+- After any final-review fix wave, re-verify with a review scoped to the fixes; rerun the full protocol only when the fix wave was broad.
 
 **Executing Plans:**
-- Use ordinary review after each task or at natural checkpoints.
-- Use `code-review` before merge or when the user asks for strong review.
+- Use ordinary review after each task or at natural checkpoints, including routine merges.
+- Use `code-review` when the change is high-risk or the user asks for strong review.
 
 **Ad-Hoc Development:**
-- Use ordinary review for small local checkpoints.
-- Use `code-review` before merge, for PR review, or when stuck on subtle bugs.
+- Use ordinary review for small local checkpoints and routine pre-merge reviews.
+- Use `code-review` for high-risk changes, explicit deep-review requests, or when stuck on subtle bugs.
 
 ## Red Flags
 
@@ -110,7 +110,8 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
-- Use ordinary review when the user explicitly asked for max, deep, strong, comprehensive, PR, or bug-finding review
+- Use ordinary review when the user explicitly asked for max, deep, strong, comprehensive, or bug-finding review
+- Escalate a routine low-risk review to max review when nothing triggered it: no explicit ask, no risk signals, no large merge gate
 
 **If reviewer wrong:**
 - Push back with technical reasoning

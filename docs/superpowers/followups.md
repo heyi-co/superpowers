@@ -122,6 +122,41 @@ with `scripts/run-skill-evidence.sh`, land transcripts under
 `docs/superpowers/evidence/`, and add evaluation rows. Can be executed
 together with the GREEN-transcript backfill entry.
 
+Update 2026-07-11: the Gate Semantics portion is superseded — the gate was
+rewritten (P0/P1 blocking, P2 adjudication, scoped re-verify) with live
+before/after transcripts under `docs/superpowers/evidence/code-review/`
+(scenario 4, gate-p2). The escape-hatch and working-from-issues portions
+remain open.
+
+### 2026-07-11 · tests/claude-code LLM tests break under non-English operator config
+
+Source: 2026-07-11 review-gate lightening session.
+
+`tests/claude-code/test-helpers.sh` `run_claude` invokes plain `claude -p`
+with the operator's real `~/.claude` config, so a user-level "respond in
+Chinese" instruction makes the English keyword assertions fail
+(`test-subagent-driven-development.sh` "Mentions loading plan", exit 1)
+even though the described workflow is correct. Reproduced identically on an
+untouched pre-edit checkout, so it is environmental, not content drift.
+Fix direction: isolate sessions with a scratch `CLAUDE_CONFIG_DIR` seeded
+with credentials only, as `scripts/run-skill-evidence.sh` already does.
+
+### 2026-07-11 · run-skill-evidence codex GREEN installs git HEAD, and its load check can pass vacuously
+
+Source: 2026-07-11 review-gate lightening session.
+
+`codex plugin add` materializes the plugin cache from the marketplace
+repo's committed state, not the working tree, so a codex GREEN run against
+uncommitted skill edits silently tests the old content (observed live: the
+cached `code-review/SKILL.md` carried the pre-edit gate text while the
+working tree carried the new one). `verify_codex_green_load` did not catch
+it because the path it extracts from `codex plugin list` resolved to the
+marketplace root (the working tree itself), making the `diff -r` vacuous.
+Fix direction: verify against the version-keyed cache directory the session
+actually reads (`$CODEX_HOME/plugins/cache/...`), and either require a
+clean committed tree for codex GREEN runs or fail loudly when
+`git status --porcelain` is non-empty in the marketplace root.
+
 ## Done
 
 (none yet)

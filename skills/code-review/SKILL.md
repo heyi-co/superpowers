@@ -1,7 +1,7 @@
 ---
 name: code-review
-version: 3.1.0
-description: Use when asked to review a pull request, branch, commit, or diff, to hunt for bugs in a change, to run a security or contract review of a change, or to gate a merge on review findings
+version: 3.2.0
+description: Use when asked for a max, deep, or comprehensive review or a bug hunt, to run a security or contract review of a change, when a change is high-risk (auth, migration, public contract, concurrency), or when a workflow routes a merge gate here
 ---
 
 # Code Review
@@ -19,16 +19,23 @@ verification, a final gap sweep, and a capped findings list.
 
 ## When to Use
 
-- Reviewing a pull request, branch, commit range, or supplied diff
+- An explicit ask for a max, deep, strong, or comprehensive review
 - Bug hunts, security reviews, contract-break reviews, regression searches
-- The final whole-branch gate in superpowers:subagent-driven-development and
-  the max route in superpowers:requesting-code-review
+- High-risk changes: auth or permissions, migrations or data integrity,
+  public API contracts, concurrency, payment paths
+- A merge gate over a large branch that spans many subsystems
+- The max route in superpowers:requesting-code-review and the final
+  whole-branch gate in superpowers:subagent-driven-development when that
+  gate escalates to max review
 
 An explicit invocation of this skill (slash command or by name) always runs
 this skill.
 
 ## When NOT to Use
 
+- A routine, low-risk review: a small diff, a development checkpoint, or an
+  ordinary branch or PR merge gate with no risk signals. Use the ordinary
+  review path in superpowers:requesting-code-review instead.
 - A natural-language review request on a harness with a native max-grade
   review command (for example Claude Code's built-in `/code-review`):
   prefer the native command. The workflow-internal invocations named above
@@ -59,16 +66,24 @@ order as prose with those fields.
 
 This section is the authoritative definition of gate behavior; workflow
 skills that route here restate it, they do not redefine it. It applies when
-this skill acts as a merge or finish gate (the final whole-branch gate in
-superpowers:subagent-driven-development, the max route in
-superpowers:requesting-code-review, or any explicit gate request):
+this skill acts as a merge or finish gate (a final whole-branch gate in
+superpowers:subagent-driven-development that escalated to max review, the
+max route in superpowers:requesting-code-review, or any explicit gate
+request):
 
-- P0, P1, and P2 findings block finishing. P3 findings are non-blocking by
-  default.
+- P0 and P1 findings block finishing. P2 and P3 findings are non-blocking
+  by default.
+- P2 findings require adjudication by your human partner: present each one
+  with a recommendation — fix now or track as follow-up — and record their
+  decision next to the finding. Never silently drop a P2; unresolved P2s
+  appear in the finish report.
 - Only your human partner can accept a blocking finding and proceed anyway.
   Record any such acceptance next to the finding.
-- After fixing findings, rerun this skill on the updated diff. The gate
-  passes only on a fresh run with no remaining blocking findings.
+- After fixing findings, re-verify with a review scoped to the fixed
+  findings and the code the fixes touched. Rerun the full protocol only
+  when the fix wave was broad — it touched many files beyond the original
+  findings or introduced new risky surface. The gate passes only when a
+  fresh re-verification shows no remaining blocking findings.
 - Priority labels can drift between runs on the same finding (see
   evaluation.md); the latest run's labels are authoritative.
 - Circuit breaker: if two consecutive fix-and-rerun cycles leave the
