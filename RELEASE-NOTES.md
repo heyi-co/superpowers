@@ -1,5 +1,35 @@
 # Superpowers Release Notes
 
+## v6.1.1-heyi.2 (2026-07-11)
+
+### Review gate lightening (#18)
+
+Max review is no longer the default merge-gate path. The protocol itself
+(`review-protocol.md`) is unchanged; what changed is when it runs and what
+blocks:
+
+- **Routing narrowed.** Ordinary review (the `requesting-code-review`
+  general-purpose reviewer) is now the default for routine branch and PR
+  merge gates. `code-review` max review triggers only on explicit asks
+  (max/deep/strong/comprehensive review, bug hunt, security,
+  contract-break, regression search), high-risk changes (auth/permissions,
+  migrations/data integrity, public API contracts, concurrency, payments),
+  or large branches spanning many subsystems.
+- **Gate blocks on P0/P1 only.** P2 findings are non-blocking by default
+  and go to the human partner for adjudication (fix now or track as
+  follow-up, never silently dropped). P3 unchanged.
+- **Scoped re-review after fixes.** A fix wave gets a re-review scoped to
+  the fixed findings and touched code; a full protocol rerun is reserved
+  for broad fix waves. Circuit breaker unchanged.
+- `subagent-driven-development` final-gate flowchart and prose, README, and
+  the integration test (77 assertions) updated to pin the new contract.
+- Evidence: before/after transcripts for two new pressure scenarios
+  (routing, single-P2 gate) plus recall regressions on Claude Code and
+  Codex CLI, recorded in `skills/code-review/evaluation.md`.
+- Two new followups: locale-sensitive `tests/claude-code` assertions, and
+  `run-skill-evidence.sh` codex GREEN installing from committed HEAD with a
+  vacuous load check.
+
 ## v6.1.1-heyi.1 (2026-07-08)
 
 First release on the fork's independent version line. From here the fork
